@@ -17,7 +17,7 @@ The following internal attributes will be used
     * y          - target variable
     
     * nu         - number of units per hidden layer
-    
+      
     * ni         - number of iterations
     * lr         - learning rate
 
@@ -99,8 +99,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.tol   = 0.05 #originally at 0.05
         self.decay = 0.1 #originally at 0.1
 
-        self.best_nl = 0 #DEBUG, Best number of layers
-        
+
     def fit(self, X, y):
         """
         Fit a model (a neural network with a hidden layer) given a dataset
@@ -126,7 +125,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.X_test = np.array(self.X_test)
         self.y      = np.array(self.y)
         self.y_test = np.array(self.y_test)
-        
+
         self.classes_  = np.unique(y)
         self.n_classes = self.classes_.shape[0]
 
@@ -163,15 +162,18 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         msdX = self.X[:,np.where(self.viu)[0]]
 
+        output_num = len(np.unique(self.y)) #this depends on dataset used, review.
         #Initial NN construction
         inputs = Input(shape = (msdX.shape[1],)) #input shape: nº features used, 0 (vector)
         initial_hlayer = Dense(units = self.nu[0], activation = "relu", )(inputs)
-        output = Dense(len(np.unique(self.y)), activation = "softmax")(initial_hlayer) #softmax instead?
+        output = Dense(output_num, activation = "softmax")(initial_hlayer) #softmax instead?
         model = Model(inputs = inputs, outputs = output)
         sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
         model.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
-        self.y = to_categorical(self.y) #to use with categorical cross entropy
         self.nn = model
+        #while keras being tested with multiclass classification - softmax
+        self.y = to_categorical(self.y) #to use with categorical cross entropy
+        self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
         
         #NN fit
         print("[DEBUG] Fitting initial NN.")
@@ -224,18 +226,17 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                     viu[np.where(msd == np.min(msd))] = 1
 
                 msdX = self.X[:,np.where(viu)[0]]
-                print("[DEBUG] Creating MLPClassifier with input layer size: {}.".format(msdX.shape[1]))
-                cnn  = MLPClassifier(hidden_layer_sizes = (self.nu[0],),
-                                     activation         = "relu",
-                                     learning_rate      = "constant", 
-                                     learning_rate_init = self.lr,
-                                     solver             = "sgd",
-                                     alpha              = 0,
-                                     max_iter           = self.it,
-                                     tol                = 0)
-                
-                
-                cnn.fit(msdX, self.y)
+                #New Keras NN creation
+                print("[DEBUG] Creating new NN (cnn) with {} nº of features.".format(msdX.shape[1]))
+                inputs = Input(shape = (msdX.shape[1],)) #input shape: nº features used
+                h_layer = Dense(units = self.nu[0], activation = "relu", )(inputs)
+                output = Dense(units = output_num, activation = "softmax")(h_layer) 
+                cnn = Model(inputs = inputs, outputs = output)
+                sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
+                cnn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
+        
+                cnn.fit(x = msdX, y= self.y, verbose=0,batch_size =  200, epochs = self.it)
+
                 nsc = self._nescience(self.msd, viu, cnn, msdX)
 
                 if nsc == self.INVALID_INACCURACY:
@@ -253,13 +254,11 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             
                 # Save data if nescience has been reduced                        
                 if (nsc - self.tol) < self.nsc:
-                    print("DEBUG] SAVED THIS CONFIGURATION.")
-                    self.best_nl = len(cnn.coefs_)                               
+                    print("DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.")
                     decreased = True
                     self.nsc = nsc
                     self.nn   = cnn
                     self.viu  = viu
-                    print("[DEBUG] Nescience reduced after adding new feature")
                     if self.verbose:
                         vals, queue = self._update_vals(msdX)
                         if self.backward:
@@ -307,7 +306,6 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             # Save data if nescience has been reduced                        
             if (nsc - self.tol) < self.nsc:
                 print("DEBUG] SAVED THIS CONFIGURATION.")
-                self.best_nl = len(cnn.coefs_)                                                
                 self.nsc  = nsc
                 self.nn   = cnn
                 self.nu   = nu
@@ -357,7 +355,6 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 # Save data if nescience has been reduced                        
                 if (nsc - self.tol) < self.nsc: #this is not correct? triggers if both improved or not
                     print("DEBUG] SAVED THIS CONFIGURATION.")                                                
-                    self.best_nl = len(cnn.coefs_)
                     self.nsc  = nsc
                     self.nn   = cnn
                     self.nu   = nu
@@ -402,7 +399,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         
         predictions = nn.predict(X) # Softmax output
         predictions = np.argmax(predictions, axis=1)
-        print("[DEBUG] Predictions after argmax interpretation: {}".format(predictions))
+        #print("[DEBUG] Predictions after argmax interpretation: {}".format(predictions))
         return predictions
 
 
@@ -642,9 +639,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         # Header
         string = "def NN(X):\n"
             
-        # Parameters [for each layer i in network...]
-        print("[DEBUG] Number of layers (hidden + output): {}".format(len(nn.layers)-1))
-        #print(nn.layers[1].get_weights())
+        # Parameters [for each layer i in network...]r
         for i in np.arange(len(nn.layers)-1):
             string = string + "    W" + str(i) + " = " + str(nn.layers[i+1].get_weights()[0]) + "\n"
             string = string + "    b" + str(i) + " = " + str(nn.layers[i+1].get_weights()[1]) + "\n"
@@ -666,8 +661,6 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             
         string = string + "    return predictions\n"
 
-        print(string)
-        print("Number of layers depth: {}.".format(len(nn.layers)-1))
         return string
     
             
