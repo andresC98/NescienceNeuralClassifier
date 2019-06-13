@@ -52,6 +52,8 @@ from keras import optimizers
 from keras import losses
 from keras.utils import to_categorical
 
+from Nescience import *
+
 from queue import Queue
 
 queue = Queue(10)
@@ -65,7 +67,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     INVALID_INACCURACY = -1    # If algorithm cannot be applied to this dataset
     INVALID_REDUNDANCY = -2    # Too small model    
     
-    def __init__(self, niterations=25, learning_rate=0.01, method="Harmonic", compressor="bz2", backward=False, verbose=False):
+    def __init__(self, niterations=500, learning_rate=0.01, method="Harmonic", compressor="bz2", backward=False, verbose=False):
         """
         Initialization of the model
     
@@ -186,7 +188,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.nn.summary()
         print("[DEBUG] Evaluating initial nn...")
         score = self.nn.evaluate(msdX, self.y)
-        print("[DEBUG] Keras-Scores obtained: {}:{}, {}:{}.".format(model.metrics_names[0],score[0],model.metrics_names[1],score[1]))
+        print("[DEBUG] Keras-Scores obtained: {}:{}, {}:{}.".format(self.nn.metrics_names[0],score[0],self.nn.metrics_names[1],score[1]))
         self.nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
 
         if self.nsc == self.INVALID_INACCURACY:
@@ -231,14 +233,15 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
                 msdX = self.X[:,np.where(viu)[0]]
                 #New Keras NN creation
-                print("[DEBUG] Creating new NN (cnn) with {} nº of features.".format(msdX.shape[1]))
+                print("[DEBUG] Adding new feature to cnn. {} nº of features.".format(msdX.shape[1]))
                 cnn = Sequential()
-                cnn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1]))
+                cnn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1])) #first layer after inputs
+                for layer in np.arange(len(self.nu)-1):
+                    cnn.add(Dense(units = self.nu[layer+1], activation = 'relu'))
                 cnn.add(Dense(units = output_num, activation = 'softmax'))
                 sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
                 cnn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
                 cnn.fit(x = msdX, y= self.y, verbose=0,batch_size =  32, epochs = self.it)
-                cnn.summary()
 
                 nsc = self._nescience(self.msd, viu, cnn, msdX)
 
@@ -258,6 +261,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 # Save data if nescience has been reduced                        
                 if (nsc - self.tol) < self.nsc:
                     print("DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.")
+                    cnn.summary()
+
                     decreased = True
                     self.nsc = nsc
                     self.nn   = cnn
@@ -275,19 +280,20 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             
             nu = self.nu.copy()
             nu.append(3)
-            print("[DEBUG] Testing adding a new layer...{}.".format(nu))            
+            print("[DEBUG] Testing adding a new layer... Current hidden layers: {}.".format(nu))            
             msdX = self.X[:,np.where(self.viu)[0]]
 
             cnn = Sequential()
-            cnn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1]))
-            for layer in np.arange(len(self.nu)-1):
-                cnn.add(Dense(units = 3, activation = 'relu'))
+            cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
+            for k, units in enumerate(nu):
+                if(k > 0): #we already added the first hidden layer
+                    cnn.add(Dense(units, activation = 'relu'))
             
             cnn.add(Dense(units = output_num, activation = 'softmax'))
             sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
             cnn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
             cnn.fit(x = msdX, y= self.y, verbose=0,batch_size =  32, epochs = self.it)
-            cnn.summary()
+            
 
             nsc = self._nescience(self.msd, self.viu, cnn, msdX)
 
@@ -308,6 +314,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             # Save data if nescience has been reduced                        
             if (nsc - self.tol) < self.nsc:
                 print("DEBUG] SAVED THIS CONFIGURATION.")
+                cnn.summary()
                 self.nsc  = nsc
                 self.nn   = cnn
                 self.nu   = nu
@@ -319,7 +326,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             
             #
             # Test adding a new unit
-            #
+            # for each layer: adds a unit, check nescience
             
             for i in np.arange(len(self.nu)): #loops k times (in a NN with K hidden layers)
                 nu = self.nu.copy()
@@ -328,15 +335,13 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 msdX = self.X[:,np.where(self.viu)[0]]
                 
                 cnn = Sequential()
-                cnn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1]))
-                for layer in np.arange(len(self.nu)-1):
-                    cnn.add(Dense(units = nu[i], activation = 'relu'))
-                
+                cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
+                for k in np.arange(len(self.nu)-1):
+                    cnn.add(Dense(units = nu[k+1], activation='relu'))
                 cnn.add(Dense(units = output_num, activation = 'softmax'))
                 sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
                 cnn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
                 cnn.fit(x = msdX, y= self.y, verbose=0,batch_size =  32, epochs = self.it)
-                cnn.summary()
 
                 nsc = self._nescience(self.msd, self.viu, cnn, msdX)
 
@@ -353,6 +358,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 # Save data if nescience has been reduced                        
                 if (nsc - self.tol) < self.nsc: 
                     print("DEBUG] SAVED THIS CONFIGURATION.")
+                    cnn.summary()
                     self.nsc  = nsc
                     self.nn   = cnn
                     self.nu   = nu
@@ -642,11 +648,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         # Parameters [for each layer i in network...]r
 
         for i in np.arange(len(nn.layers)):
-            string = string + "    W" + str(i) + " = " + str(nn.layers[i+1].get_weights()[0]) + "\n"
-            string = string + "    b" + str(i) + " = " + str(nn.layers[i+1].get_weights()[1]) + "\n"
+            string = string + "    W" + str(i) + " = " + str(nn.layers[i].get_weights()[0]) + "\n"
+            string = string + "    b" + str(i) + " = " + str(nn.layers[i].get_weights()[1]) + "\n"
             
         # Computation
-        print("CURRENT LAYER LENGTH: {}.".format(len(nn.layers)))
         for i in np.arange(len(nn.layers)):               
             if(i==0):
                 string = string + "    Z" + str(i) + " = np.matmul(W" + str(i) + ", X) + b" + str(i) + "\n"

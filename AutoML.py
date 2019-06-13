@@ -24,7 +24,7 @@ from threading      import Thread
 # ML
 import numpy as np
 from sklearn.datasets import load_digits
-from Nescience.NescienceNeuralNetworkClassifierV2 import *
+from NNClassifier.NescienceNeuralNetworkClassifierV2 import *
 
 count = 1
 
@@ -165,15 +165,15 @@ thread_consumer.start()
 # Prepare data and model
 
 # scikit - Digits <----
-data = load_digits()
-X = data.data
-y = data.target
-
-#Breast cancer
-# from sklearn.datasets import load_breast_cancer
-# data = load_breast_cancer()
+# data = load_digits()
 # X = data.data
 # y = data.target
+
+#Breast cancer
+from sklearn.datasets import load_breast_cancer
+data = load_breast_cancer()
+X = data.data
+y = data.target
 
 
 # Numerai
