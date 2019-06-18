@@ -1,0 +1,1161 @@
+[DEBUG] Fitting initial NN.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_1 (Dense)              (None, 3)                 6         
+_________________________________________________________________
+dense_2 (Dense)              (None, 10)                40        
+=================================================================
+Total params: 46
+Trainable params: 46
+Non-trainable params: 0
+_________________________________________________________________
+[DEBUG] Evaluating initial nn...
+
+  32/1257 [..............................] - ETA: 1s
+1257/1257 [==============================] - 0s 48us/step
+[DEBUG] Keras-Scores obtained: loss:2.301351132047679, acc:0.10819411296738266.
+
+ 32/540 [>.............................] - ETA: 0s
+540/540 [==============================] - 0s 42us/step
+[DEBUG] NN Evaluated Accuracy = 0.07962962971241386.
+Miscoding:  0.948852174675939 Inaccuracy:  0.3820301783264746 Redundancy:  0.44320987654320987 Nescience:  0.5060927997210057
+[DEBUG] Testing adding a new feature to cnn. 2 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_3 (Dense)              (None, 3)                 9         
+_________________________________________________________________
+dense_4 (Dense)              (None, 10)                40        
+=================================================================
+Total params: 49
+Trainable params: 49
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 0s
+540/540 [==============================] - 0s 107us/step
+[DEBUG] NN Evaluated Accuracy = 0.4018518520726098.
+Added new feature - Nescience:  0.47730307799939037
+[DEBUG] Testing adding a new layer... Current hidden layers: [3, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [4]
+Tolerance: 0.045000000000000005
+[DEBUG] Testing adding a new feature to cnn. 3 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [3, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [4]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_15 (Dense)             (None, 4)                 12        
+_________________________________________________________________
+dense_16 (Dense)             (None, 10)                50        
+=================================================================
+Total params: 62
+Trainable params: 62
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 1s
+540/540 [==============================] - 0s 201us/step
+[DEBUG] NN Evaluated Accuracy = 0.3333333337748492.
+Added new unit - Nescience:  0.5039067377165692
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.04050000000000001
+[DEBUG] Testing adding a new feature to cnn. 3 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [4, 3].
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_19 (Dense)             (None, 4)                 12        
+_________________________________________________________________
+dense_20 (Dense)             (None, 3)                 15        
+_________________________________________________________________
+dense_21 (Dense)             (None, 10)                40        
+=================================================================
+Total params: 67
+Trainable params: 67
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 2s
+540/540 [==============================] - 0s 339us/step
+[DEBUG] NN Evaluated Accuracy = 0.3055555557763135.
+Added new layer - Nescience:  0.5168542641913244
+[DEBUG] Testing adding a new unit... Hidden layers: [5, 3]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_22 (Dense)             (None, 5)                 15        
+_________________________________________________________________
+dense_23 (Dense)             (None, 3)                 18        
+_________________________________________________________________
+dense_24 (Dense)             (None, 10)                40        
+=================================================================
+Total params: 73
+Trainable params: 73
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 2s
+540/540 [==============================] - 0s 315us/step
+[DEBUG] NN Evaluated Accuracy = 0.36666666644590873.
+Added new unit - Nescience:  0.5089784134800656
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [5, 4]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_25 (Dense)             (None, 5)                 15        
+_________________________________________________________________
+dense_26 (Dense)             (None, 4)                 24        
+_________________________________________________________________
+dense_27 (Dense)             (None, 10)                50        
+=================================================================
+Total params: 89
+Trainable params: 89
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 2s
+540/540 [==============================] - 0s 289us/step
+[DEBUG] NN Evaluated Accuracy = 0.3814814810399656.
+Added new unit - Nescience:  0.5194989045771801
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.03645000000000001
+[DEBUG] Testing adding a new feature to cnn. 3 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_28 (Dense)             (None, 5)                 20        
+_________________________________________________________________
+dense_29 (Dense)             (None, 4)                 24        
+_________________________________________________________________
+dense_30 (Dense)             (None, 10)                50        
+=================================================================
+Total params: 94
+Trainable params: 94
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 2s
+540/540 [==============================] - 0s 314us/step
+[DEBUG] NN Evaluated Accuracy = 0.3981481474858743.
+Added new feature - Nescience:  0.5237007840395234
+[DEBUG] Testing adding a new layer... Current hidden layers: [5, 4, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [6, 4]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_35 (Dense)             (None, 6)                 24        
+_________________________________________________________________
+dense_36 (Dense)             (None, 4)                 28        
+_________________________________________________________________
+dense_37 (Dense)             (None, 10)                50        
+=================================================================
+Total params: 102
+Trainable params: 102
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 2s
+540/540 [==============================] - 0s 338us/step
+[DEBUG] NN Evaluated Accuracy = 0.4111111111111111.
+Added new unit - Nescience:  0.5317277667648832
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [6, 5]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_38 (Dense)             (None, 6)                 24        
+_________________________________________________________________
+dense_39 (Dense)             (None, 5)                 35        
+_________________________________________________________________
+dense_40 (Dense)             (None, 10)                60        
+=================================================================
+Total params: 119
+Trainable params: 119
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 3s
+540/540 [==============================] - 0s 410us/step
+[DEBUG] NN Evaluated Accuracy = 0.43333333333333335.
+Added new unit - Nescience:  0.5386510868693151
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.03280500000000001
+[DEBUG] Testing adding a new feature to cnn. 4 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_41 (Dense)             (None, 6)                 30        
+_________________________________________________________________
+dense_42 (Dense)             (None, 5)                 35        
+_________________________________________________________________
+dense_43 (Dense)             (None, 10)                60        
+=================================================================
+Total params: 125
+Trainable params: 125
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 2s
+540/540 [==============================] - 0s 379us/step
+[DEBUG] NN Evaluated Accuracy = 0.4074074074074074.
+Added new feature - Nescience:  0.5668591759305286
+[DEBUG] Testing adding a new layer... Current hidden layers: [6, 5, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [7, 5]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_48 (Dense)             (None, 7)                 35        
+_________________________________________________________________
+dense_49 (Dense)             (None, 5)                 40        
+_________________________________________________________________
+dense_50 (Dense)             (None, 10)                60        
+=================================================================
+Total params: 135
+Trainable params: 135
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 4s
+540/540 [==============================] - 0s 599us/step
+[DEBUG] NN Evaluated Accuracy = 0.4870370363747632.
+Added new unit - Nescience:  0.5392729097791937
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [7, 6]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_51 (Dense)             (None, 7)                 35        
+_________________________________________________________________
+dense_52 (Dense)             (None, 6)                 48        
+_________________________________________________________________
+dense_53 (Dense)             (None, 10)                70        
+=================================================================
+Total params: 153
+Trainable params: 153
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 3s
+540/540 [==============================] - 0s 479us/step
+[DEBUG] NN Evaluated Accuracy = 0.44259259193031875.
+Added new unit - Nescience:  0.5355163618501397
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.02952450000000001
+[DEBUG] Testing adding a new feature to cnn. 5 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_54 (Dense)             (None, 7)                 42        
+_________________________________________________________________
+dense_55 (Dense)             (None, 6)                 48        
+_________________________________________________________________
+dense_56 (Dense)             (None, 10)                70        
+=================================================================
+Total params: 160
+Trainable params: 160
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 4s
+540/540 [==============================] - 0s 537us/step
+[DEBUG] NN Evaluated Accuracy = 0.6259259263674418.
+Added new feature - Nescience:  0.49227841554006246
+[DEBUG] Testing adding a new layer... Current hidden layers: [7, 6, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [8, 6]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_61 (Dense)             (None, 8)                 48        
+_________________________________________________________________
+dense_62 (Dense)             (None, 6)                 54        
+_________________________________________________________________
+dense_63 (Dense)             (None, 10)                70        
+=================================================================
+Total params: 172
+Trainable params: 172
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 4s
+540/540 [==============================] - 0s 528us/step
+[DEBUG] NN Evaluated Accuracy = 0.6222222226637381.
+Added new unit - Nescience:  0.46594474464124147
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [8, 7]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_64 (Dense)             (None, 8)                 48        
+_________________________________________________________________
+dense_65 (Dense)             (None, 7)                 63        
+_________________________________________________________________
+dense_66 (Dense)             (None, 10)                80        
+=================================================================
+Total params: 191
+Trainable params: 191
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 4s
+540/540 [==============================] - 0s 565us/step
+[DEBUG] NN Evaluated Accuracy = 0.6537037032621879.
+Added new unit - Nescience:  0.4728013468340951
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.02657205000000001
+[DEBUG] Testing adding a new feature to cnn. 6 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_67 (Dense)             (None, 8)                 56        
+_________________________________________________________________
+dense_68 (Dense)             (None, 7)                 63        
+_________________________________________________________________
+dense_69 (Dense)             (None, 10)                80        
+=================================================================
+Total params: 199
+Trainable params: 199
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 4s
+540/540 [==============================] - 0s 576us/step
+[DEBUG] NN Evaluated Accuracy = 0.6759259268089577.
+Added new feature - Nescience:  0.41568609289501646
+[DEBUG] Testing adding a new layer... Current hidden layers: [8, 7, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [9, 7]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_74 (Dense)             (None, 9)                 63        
+_________________________________________________________________
+dense_75 (Dense)             (None, 7)                 70        
+_________________________________________________________________
+dense_76 (Dense)             (None, 10)                80        
+=================================================================
+Total params: 213
+Trainable params: 213
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 4s
+540/540 [==============================] - 0s 631us/step
+[DEBUG] NN Evaluated Accuracy = 0.6981481468236005.
+Added new unit - Nescience:  0.41134643877880134
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [9, 8]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_77 (Dense)             (None, 9)                 63        
+_________________________________________________________________
+dense_78 (Dense)             (None, 8)                 80        
+_________________________________________________________________
+dense_79 (Dense)             (None, 10)                90        
+=================================================================
+Total params: 233
+Trainable params: 233
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 5s
+540/540 [==============================] - 0s 672us/step
+[DEBUG] NN Evaluated Accuracy = 0.7185185194015503.
+Added new unit - Nescience:  0.39545763582972016
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.02391484500000001
+[DEBUG] Testing adding a new feature to cnn. 7 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [9, 8, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [10, 8]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_87 (Dense)             (None, 10)                70        
+_________________________________________________________________
+dense_88 (Dense)             (None, 8)                 88        
+_________________________________________________________________
+dense_89 (Dense)             (None, 10)                90        
+=================================================================
+Total params: 248
+Trainable params: 248
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 5s
+540/540 [==============================] - 0s 686us/step
+[DEBUG] NN Evaluated Accuracy = 0.7296296283050819.
+Added new unit - Nescience:  0.40226653028638404
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [10, 9]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_90 (Dense)             (None, 10)                70        
+_________________________________________________________________
+dense_91 (Dense)             (None, 9)                 99        
+_________________________________________________________________
+dense_92 (Dense)             (None, 10)                100       
+=================================================================
+Total params: 269
+Trainable params: 269
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 7s
+540/540 [==============================] - 0s 888us/step
+[DEBUG] NN Evaluated Accuracy = 0.7203703690458227.
+Added new unit - Nescience:  0.38556046046206244
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.021523360500000012
+[DEBUG] Testing adding a new feature to cnn. 7 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [10, 9, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [11, 9]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_100 (Dense)            (None, 11)                77        
+_________________________________________________________________
+dense_101 (Dense)            (None, 9)                 108       
+_________________________________________________________________
+dense_102 (Dense)            (None, 10)                100       
+=================================================================
+Total params: 285
+Trainable params: 285
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 6s
+540/540 [==============================] - 0s 823us/step
+[DEBUG] NN Evaluated Accuracy = 0.7333333342163652.
+Added new unit - Nescience:  0.38658894166349617
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [11, 10]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_103 (Dense)            (None, 11)                77        
+_________________________________________________________________
+dense_104 (Dense)            (None, 10)                120       
+_________________________________________________________________
+dense_105 (Dense)            (None, 10)                110       
+=================================================================
+Total params: 307
+Trainable params: 307
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 6s
+540/540 [==============================] - 0s 832us/step
+[DEBUG] NN Evaluated Accuracy = 0.7203703703703703.
+Added new unit - Nescience:  0.3941590727848466
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.01937102445000001
+[DEBUG] Testing adding a new feature to cnn. 7 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_106 (Dense)            (None, 11)                88        
+_________________________________________________________________
+dense_107 (Dense)            (None, 10)                120       
+_________________________________________________________________
+dense_108 (Dense)            (None, 10)                110       
+=================================================================
+Total params: 318
+Trainable params: 318
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 6s
+540/540 [==============================] - 0s 845us/step
+[DEBUG] NN Evaluated Accuracy = 0.7611111124356588.
+Added new feature - Nescience:  0.3639888338710369
+[DEBUG] Testing adding a new layer... Current hidden layers: [11, 10, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [12, 10]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_113 (Dense)            (None, 12)                96        
+_________________________________________________________________
+dense_114 (Dense)            (None, 10)                130       
+_________________________________________________________________
+dense_115 (Dense)            (None, 10)                110       
+=================================================================
+Total params: 336
+Trainable params: 336
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 8s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.7388888893304048.
+Added new unit - Nescience:  0.36559039410893723
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [12, 11]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_116 (Dense)            (None, 12)                96        
+_________________________________________________________________
+dense_117 (Dense)            (None, 11)                143       
+_________________________________________________________________
+dense_118 (Dense)            (None, 10)                120       
+=================================================================
+Total params: 359
+Trainable params: 359
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 7s
+540/540 [==============================] - 1s 975us/step
+[DEBUG] NN Evaluated Accuracy = 0.7462962958547804.
+Added new unit - Nescience:  0.3811786422433491
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.01743392200500001
+[DEBUG] Testing adding a new feature to cnn. 8 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_119 (Dense)            (None, 12)                108       
+_________________________________________________________________
+dense_120 (Dense)            (None, 11)                143       
+_________________________________________________________________
+dense_121 (Dense)            (None, 10)                120       
+=================================================================
+Total params: 371
+Trainable params: 371
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 7s
+540/540 [==============================] - 1s 987us/step
+[DEBUG] NN Evaluated Accuracy = 0.7648148161393625.
+Added new feature - Nescience:  0.3370718422067011
+[DEBUG] Testing adding a new layer... Current hidden layers: [12, 11, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [13, 11]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_126 (Dense)            (None, 13)                117       
+_________________________________________________________________
+dense_127 (Dense)            (None, 11)                154       
+_________________________________________________________________
+dense_128 (Dense)            (None, 10)                120       
+=================================================================
+Total params: 391
+Trainable params: 391
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 8s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.7814814814814814.
+Added new unit - Nescience:  0.35200225021599973
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [13, 12]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_129 (Dense)            (None, 13)                117       
+_________________________________________________________________
+dense_130 (Dense)            (None, 12)                168       
+_________________________________________________________________
+dense_131 (Dense)            (None, 10)                130       
+=================================================================
+Total params: 415
+Trainable params: 415
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 8s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.766666665342119.
+Added new unit - Nescience:  0.34228439007630224
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.015690529804500006
+[DEBUG] Testing adding a new feature to cnn. 9 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_132 (Dense)            (None, 13)                130       
+_________________________________________________________________
+dense_133 (Dense)            (None, 12)                168       
+_________________________________________________________________
+dense_134 (Dense)            (None, 10)                130       
+=================================================================
+Total params: 428
+Trainable params: 428
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 9s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.7796296296296297.
+Added new feature - Nescience:  0.32746729820187365
+[DEBUG] Testing adding a new layer... Current hidden layers: [13, 12, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [14, 12]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_139 (Dense)            (None, 14)                140       
+_________________________________________________________________
+dense_140 (Dense)            (None, 12)                180       
+_________________________________________________________________
+dense_141 (Dense)            (None, 10)                130       
+=================================================================
+Total params: 450
+Trainable params: 450
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 8s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.7851851843021534.
+Added new unit - Nescience:  0.29847383902089425
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [14, 13]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_142 (Dense)            (None, 14)                140       
+_________________________________________________________________
+dense_143 (Dense)            (None, 13)                195       
+_________________________________________________________________
+dense_144 (Dense)            (None, 10)                140       
+=================================================================
+Total params: 475
+Trainable params: 475
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 8s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.7870370361540052.
+Added new unit - Nescience:  0.3090677231897914
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.014121476824050006
+[DEBUG] Testing adding a new feature to cnn. 10 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_145 (Dense)            (None, 14)                154       
+_________________________________________________________________
+dense_146 (Dense)            (None, 13)                195       
+_________________________________________________________________
+dense_147 (Dense)            (None, 10)                140       
+=================================================================
+Total params: 489
+Trainable params: 489
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 9s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.8777777773362619.
+Added new feature - Nescience:  0.24350111938074803
+[DEBUG] Testing adding a new layer... Current hidden layers: [14, 13, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [15, 13]
+[DEBUG] Testing adding a new unit... Hidden layers: [14, 14]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_155 (Dense)            (None, 14)                154       
+_________________________________________________________________
+dense_156 (Dense)            (None, 14)                210       
+_________________________________________________________________
+dense_157 (Dense)            (None, 10)                150       
+=================================================================
+Total params: 514
+Trainable params: 514
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 11s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.8592592579347116.
+Added new unit - Nescience:  0.23302771206024225
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.012709329141645007
+[DEBUG] Testing adding a new feature to cnn. 11 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_158 (Dense)            (None, 14)                168       
+_________________________________________________________________
+dense_159 (Dense)            (None, 14)                210       
+_________________________________________________________________
+dense_160 (Dense)            (None, 10)                150       
+=================================================================
+Total params: 528
+Trainable params: 528
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 10s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.837037037478553.
+Added new feature - Nescience:  0.19073231435900054
+[DEBUG] Testing adding a new layer... Current hidden layers: [14, 14, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [15, 14]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_165 (Dense)            (None, 15)                180       
+_________________________________________________________________
+dense_166 (Dense)            (None, 14)                224       
+_________________________________________________________________
+dense_167 (Dense)            (None, 10)                150       
+=================================================================
+Total params: 554
+Trainable params: 554
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 9s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.8777777764532301.
+Added new unit - Nescience:  0.19951303798516692
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [15, 15]
+Tolerance: 0.011438396227480507
+[DEBUG] Testing adding a new feature to cnn. 12 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_171 (Dense)            (None, 15)                195       
+_________________________________________________________________
+dense_172 (Dense)            (None, 14)                224       
+_________________________________________________________________
+dense_173 (Dense)            (None, 10)                150       
+=================================================================
+Total params: 569
+Trainable params: 569
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 10s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.8870370365955211.
+Added new feature - Nescience:  0.17062664930871477
+[DEBUG] Testing adding a new layer... Current hidden layers: [15, 14, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [16, 14]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_178 (Dense)            (None, 16)                208       
+_________________________________________________________________
+dense_179 (Dense)            (None, 14)                238       
+_________________________________________________________________
+dense_180 (Dense)            (None, 10)                150       
+=================================================================
+Total params: 596
+Trainable params: 596
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 10s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.8999999986754523.
+Added new unit - Nescience:  0.15784880131674864
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [16, 15]
+Tolerance: 0.010294556604732457
+[DEBUG] Testing adding a new feature to cnn. 13 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [16, 14, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [17, 14]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_191 (Dense)            (None, 17)                221       
+_________________________________________________________________
+dense_192 (Dense)            (None, 14)                252       
+_________________________________________________________________
+dense_193 (Dense)            (None, 10)                150       
+=================================================================
+Total params: 623
+Trainable params: 623
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 11s
+540/540 [==============================] - 1s 1ms/step
+[DEBUG] NN Evaluated Accuracy = 0.9148148148148149.
+Added new unit - Nescience:  0.1542995567127792
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [17, 15]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_194 (Dense)            (None, 17)                221       
+_________________________________________________________________
+dense_195 (Dense)            (None, 15)                270       
+_________________________________________________________________
+dense_196 (Dense)            (None, 10)                160       
+=================================================================
+Total params: 651
+Trainable params: 651
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 12s
+540/540 [==============================] - 1s 2ms/step
+[DEBUG] NN Evaluated Accuracy = 0.9000000008830318.
+Added new unit - Nescience:  0.13378258577798396
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.00926510094425921
+[DEBUG] Testing adding a new feature to cnn. 13 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_197 (Dense)            (None, 17)                238       
+_________________________________________________________________
+dense_198 (Dense)            (None, 15)                270       
+_________________________________________________________________
+dense_199 (Dense)            (None, 10)                160       
+=================================================================
+Total params: 668
+Trainable params: 668
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 12s
+540/540 [==============================] - 1s 2ms/step
+[DEBUG] NN Evaluated Accuracy = 0.9.
+Added new feature - Nescience:  0.13988084275219403
+[DEBUG] Testing adding a new layer... Current hidden layers: [17, 15, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [18, 15]
+[DEBUG] Testing adding a new unit... Hidden layers: [17, 16]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_207 (Dense)            (None, 17)                238       
+_________________________________________________________________
+dense_208 (Dense)            (None, 16)                288       
+_________________________________________________________________
+dense_209 (Dense)            (None, 10)                170       
+=================================================================
+Total params: 696
+Trainable params: 696
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 14s
+540/540 [==============================] - 1s 2ms/step
+[DEBUG] NN Evaluated Accuracy = 0.8944444431198968.
+Added new unit - Nescience:  0.136380902655478
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.00833859084983329
+[DEBUG] Testing adding a new feature to cnn. 14 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [17, 16, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [18, 16]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_217 (Dense)            (None, 18)                252       
+_________________________________________________________________
+dense_218 (Dense)            (None, 16)                304       
+_________________________________________________________________
+dense_219 (Dense)            (None, 10)                170       
+=================================================================
+Total params: 726
+Trainable params: 726
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 14s
+540/540 [==============================] - 1s 2ms/step
+[DEBUG] NN Evaluated Accuracy = 0.8925925934756244.
+Added new unit - Nescience:  0.1444691936100173
+[DEBUG] Nescience has been reduced after adding new unit
+[DEBUG] Testing adding a new unit... Hidden layers: [18, 17]
+DEBUG] SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_220 (Dense)            (None, 18)                252       
+_________________________________________________________________
+dense_221 (Dense)            (None, 17)                323       
+_________________________________________________________________
+dense_222 (Dense)            (None, 10)                180       
+=================================================================
+Total params: 755
+Trainable params: 755
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 14s
+540/540 [==============================] - 1s 2ms/step
+[DEBUG] NN Evaluated Accuracy = 0.9018518505273042.
+Added new unit - Nescience:  0.11543396955447636
+[DEBUG] Nescience has been reduced after adding new unit
+Tolerance: 0.007504731764849962
+[DEBUG] Testing adding a new feature to cnn. 14 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [18, 17, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [19, 17]
+[DEBUG] Testing adding a new unit... Hidden layers: [18, 18]
+Tolerance: 0.006754258588364966
+Final -> Miscoding:  0.43069687855661143 Inaccuracy:  0.045289677482599745 Redundancy:  0.6301282634403711 Nescience:  0.11543396955447636
+def NN(X):
+    W0 = [[-0.1757168  -0.12923269  0.38540676 -0.16233353 -0.36823145  0.19288567
+   0.3402517   0.08642432  0.07038415 -0.03219567  0.17458884 -0.29249957
+   0.18625624 -0.24289514  0.01338378 -0.5289866  -0.39773455 -0.31829742]
+ [-0.21978655 -0.30949476  0.50803137  0.19113626  0.231117    0.0341153
+  -0.25516823  0.0230016  -0.06404757  0.08542579  0.5412395  -0.3615251
+   0.39896682  0.3354264  -0.12455711 -0.53662467  0.01239995 -0.46196175]
+ [-0.62852854  0.5328429   0.16380677  0.21027848  0.01333879 -0.10984229
+  -0.2831708   0.11999783 -0.38809213 -0.7714987   0.5528527  -0.28316402
+   0.03521036 -0.12124927  0.1121465  -0.47947383  0.0946813   0.02303919]
+ [ 0.26779512  0.3378294   0.14007977 -0.10141654  0.18230821 -0.35017398
+  -0.01862973  0.59148073  0.44596013 -0.0071106   0.03540247  0.31243145
+  -0.34863868  0.12356808  0.10053796 -0.01736715 -0.07618281 -0.03029006]
+ [ 0.01493172 -0.6217184   0.36067647 -0.37526253 -0.15888958 -0.16059382
+   0.09472597 -0.25970605 -0.27308697  0.31908232  0.3785402   0.38288835
+   0.3241794   0.46685496 -0.01653898  0.22187434  0.43310463  0.40722704]
+ [ 0.4680798  -0.28276327 -0.29719925 -0.3950711  -0.34631252 -0.16773975
+  -0.19752897  0.17890763  0.04507036  0.01492787  0.04041649  0.12183409
+  -0.02357461  0.15720597 -0.12692562 -0.14190407  0.17626035  0.6685219 ]
+ [ 0.41068655  0.43628055  0.0102972  -0.28468683  0.2360278  -0.0635488
+   0.46581143 -0.1587306  -0.2573907  -0.4178704   0.02113541 -0.01361387
+  -0.32977563  0.18367797 -0.1954486   0.09850913  0.24233906  0.08928654]
+ [ 0.24830022 -0.41414124  0.18918669 -0.02060616  0.04189146  0.12187179
+   0.25129882  0.02925672 -0.03018507  0.5203299  -0.25161436 -0.08019266
+  -0.628814   -0.29577935 -0.36774594  0.07721781  0.6817272   0.0209122 ]
+ [-0.20049275  0.00272418 -0.12231595 -0.38167045  0.78128356  0.05027466
+   0.28587863 -0.52274597 -0.32702872  0.21109429 -0.10713178 -0.16178529
+   0.21018606 -0.20319146 -0.02415159 -0.48416126 -0.02627345  0.36731783]
+ [-0.21334085 -0.01646424 -0.31938288 -0.40166375 -0.0488942   0.53234076
+   0.61365324 -0.22254944 -0.6696469   0.41717282  0.15287419 -0.35598162
+   0.19639842 -0.61195433 -0.07525387 -0.15883508 -0.16639632  0.1827585 ]
+ [-0.06406428 -0.11244848  0.03959456 -0.4781452   0.2789604   0.322175
+  -0.4050758   0.22480106  0.42473325 -0.2248061  -0.33837596 -0.08838353
+   0.35857776 -0.12213983 -0.12838298  0.276319   -0.12687093  0.30192965]
+ [ 0.05228994  0.33536267 -0.03438875 -0.31080294  0.15268429 -0.35437542
+  -0.3201561   0.4307315   0.04601794  0.47309145  0.16429421  0.0889748
+   0.15604517  0.39165497 -0.30437255  0.18426213 -0.07794959 -0.37284485]
+ [ 0.21589349 -0.07517057  0.3590901   0.19919957  0.02221817  0.5998929
+  -0.42784366  0.12508522  0.04243014  0.37864465 -0.1951704  -0.31624958
+   0.04883198  0.44538856 -0.40544578  0.54658014 -0.19198301  0.24634719]]
+    b0 = [-0.00709378  0.02465556 -0.0330858  -0.01700847  0.03721838 -0.02167106
+ -0.0437011   0.01563636 -0.00307157  0.04362145  0.01702629 -0.00702202
+  0.01345723  0.00416767  0.         -0.00845708  0.00584888 -0.01579904]
+    W1 = [[-3.10106069e-01  3.07993680e-01 -2.29301557e-01  3.91634107e-01
+  -6.68913200e-02 -2.77901560e-01  1.62113771e-01  2.33296618e-01
+  -2.07677752e-01  2.82905340e-01  4.51660663e-01 -3.02067488e-01
+  -5.60646504e-02 -2.29680255e-01  1.47999600e-01  2.94084609e-01
+  -2.97187150e-01]
+ [-2.19461963e-01 -4.87784386e-01  2.03626320e-01  2.47460112e-01
+   3.38232994e-01 -3.61706048e-01 -2.92201549e-01 -5.67079902e-01
+  -1.87010333e-01  2.34482601e-01  1.19383693e-01  1.75636560e-01
+  -4.52647684e-03 -4.49505419e-01  2.03421921e-01 -3.15654606e-01
+  -4.05667424e-02]
+ [ 7.87760615e-02  4.33896691e-01 -3.55341136e-01 -4.18823183e-01
+   2.78956834e-02  4.84649241e-01  1.45648131e-02 -4.09368537e-02
+   5.48714995e-01 -1.65493578e-01 -5.61472811e-02  2.04049230e-01
+   2.47582316e-01 -1.37348995e-02 -1.22566065e-02 -3.05234373e-01
+   2.11950317e-01]
+ [ 2.32396081e-01 -3.17610770e-01  1.98134378e-01 -3.21996361e-01
+   3.20081711e-01 -8.11919272e-02 -1.39552101e-01  1.10194124e-01
+   1.69923782e-01  3.25724036e-01 -3.28927338e-01 -8.56370851e-02
+  -1.41184881e-01 -2.99751997e-01  2.64379442e-01  1.61968410e-01
+  -9.48754624e-02]
+ [ 3.70471537e-01 -3.49678338e-01  2.33512908e-01  2.45516524e-01
+  -1.41888946e-01  3.69456947e-01  5.48062921e-01 -1.25606745e-01
+   3.35539460e-01  7.87008405e-02  5.39442375e-02 -2.73024589e-01
+  -4.99169901e-02  3.90010476e-01 -5.47350310e-02 -6.56075999e-02
+   4.11251456e-01]
+ [-2.64508456e-01 -2.59718388e-01 -1.02762334e-01  3.81763697e-01
+  -6.20515585e-01  1.54979333e-01 -2.65675128e-01  1.11059219e-01
+   1.55816823e-01 -3.89007211e-01 -3.21719736e-01  4.37882990e-01
+   2.72930413e-02 -3.55677791e-02  9.26216040e-03  9.77511238e-03
+  -2.13498443e-01]
+ [-4.00539249e-01  6.05937779e-01 -2.25291833e-01 -7.99194500e-02
+  -2.86897868e-01 -1.32875443e-01 -3.93112600e-01  2.23421171e-01
+   2.47677535e-01  2.32595075e-02 -1.32718638e-01  1.32172152e-01
+  -2.54429907e-01  1.40214324e-01 -3.37933093e-01  9.12002474e-02
+   1.60649240e-01]
+ [-1.15988053e-01 -2.84465432e-01 -3.00186276e-01 -4.45074141e-01
+   6.08834863e-01  3.61208528e-01  3.14076006e-01 -1.49655715e-01
+  -1.51733980e-02 -6.64877892e-02 -2.77582288e-01  3.18317473e-01
+  -3.67606401e-01  1.64649472e-01 -2.80859888e-01 -1.62541434e-01
+   4.82960604e-02]
+ [ 4.03131619e-02  5.18403172e-01 -3.33965629e-01 -2.38801867e-01
+   1.92015946e-01  5.03462493e-01 -7.87308589e-02  1.13396026e-01
+  -1.29144400e-01 -9.46310833e-02 -3.65448557e-02 -1.95530295e-01
+   2.12074280e-01 -1.06847927e-01  4.24329281e-01  3.89248296e-03
+  -7.32551590e-02]
+ [-3.30535099e-02 -9.77865681e-02 -1.53058782e-01  1.59868926e-01
+   5.82741201e-03  1.21481299e-01 -6.09732233e-02 -7.52839223e-02
+  -1.57031193e-02  7.79424906e-02  7.55138457e-01  1.31376177e-01
+  -8.54768790e-03 -3.81843895e-01  1.07833005e-01 -3.62024337e-01
+  -5.28051913e-01]
+ [ 3.92323643e-01  5.03901601e-01  4.87673819e-01  4.36565802e-02
+   5.92259318e-02 -4.64203298e-01 -2.38098904e-01  1.23089075e-01
+   5.25514148e-02 -2.13301942e-01  3.62074882e-01 -2.61637986e-01
+  -2.96509951e-01 -2.42253363e-01 -3.92380327e-01  9.36855003e-02
+   2.79750764e-01]
+ [ 1.30323350e-01 -2.35207245e-01 -3.67015935e-02  3.34761202e-01
+   1.90886095e-01  2.55522758e-01 -3.03353876e-01  4.22058254e-01
+  -3.17018002e-01 -2.14152038e-01  2.26733178e-01 -2.81704932e-01
+  -2.35974386e-01  3.16785537e-02  2.68512577e-01 -2.47768044e-01
+  -1.25001878e-01]
+ [ 1.39896363e-01 -1.89696044e-01  3.03769499e-01 -2.52980977e-01
+   1.16755709e-01 -7.04394141e-03 -1.15482487e-01 -8.04196205e-03
+  -5.19703269e-01  3.33516568e-01  8.35650340e-02  1.44107699e-01
+  -1.01546917e-04  4.51446146e-01  1.35795781e-02 -1.34195924e-01
+  -1.90980136e-01]
+ [ 5.43691099e-01  4.13887560e-01  3.68136704e-01 -3.92262042e-01
+   2.87708670e-01  2.81868070e-01 -5.01274109e-01  1.96266174e-02
+  -4.84060824e-01  3.01989168e-02  1.52447253e-01  3.09140950e-01
+  -2.75342554e-01 -3.05238664e-01  4.59166795e-01  1.00631155e-01
+   7.13836923e-02]
+ [-2.75790513e-01 -1.21678174e-01  3.61700803e-01 -7.91710317e-02
+   1.48097605e-01  3.40224057e-01 -2.80952811e-01  4.70722914e-02
+   2.09016174e-01 -1.20490253e-01 -3.33609283e-02 -1.15429163e-02
+   1.41353875e-01 -2.23215982e-01  2.92407662e-01 -6.05981648e-02
+   1.15825802e-01]
+ [-4.18935388e-01  3.67149472e-01  8.11792985e-02 -2.41208851e-01
+  -3.57176155e-01 -1.74532697e-01  2.53204167e-01 -1.13657720e-01
+   1.86568365e-01 -3.14766020e-01 -2.35637337e-01  6.73416182e-02
+   3.25569093e-01 -1.58018589e-01 -2.14574814e-01  2.03399122e-01
+  -2.14391172e-01]
+ [ 3.36826801e-01  2.48841718e-01 -1.84899077e-01  1.34154648e-01
+   3.89186770e-01 -1.00081123e-01  2.33649001e-01  4.70234752e-01
+  -2.45063066e-01  1.67635381e-01  2.32928574e-01 -4.49986786e-01
+  -1.15413457e-01  3.12429458e-01  1.17420323e-01  8.02182332e-02
+   4.84974086e-02]
+ [-1.81309655e-02  3.48301798e-01 -1.07094012e-01  2.71756053e-01
+   2.29716733e-01 -3.48596722e-01  1.81320589e-02  2.26415217e-01
+   5.13171256e-01 -4.32939529e-02 -1.16335258e-01 -1.18158020e-01
+  -1.84795350e-01  6.54738307e-01  1.82839930e-02 -7.21429437e-02
+   1.93270162e-01]]
+    b1 = [-0.010854   -0.0823913   0.04106995 -0.02237866  0.01940747  0.01256382
+  0.01868963  0.06371848 -0.02155125 -0.00131325  0.11672804  0.01031812
+ -0.00133646 -0.02082503 -0.01282114 -0.01095051 -0.00692628]
+    W2 = [[ 0.6593385  -0.22722094 -0.3228335  -0.366883    0.00979733 -0.37673256
+  -0.37255916  0.03073275  0.11785294  0.32292825]
+ [-0.24336055  0.6198696  -0.6909886  -0.15480177  0.17924027 -0.40779182
+  -0.6822061   0.18752503 -0.29861504  0.10234425]
+ [ 0.49550682 -0.21670683 -0.14376505 -0.24364081 -0.43766072  0.18677619
+  -0.24906987 -0.07447398  0.25895917 -0.6065688 ]
+ [-0.34594786  0.12241612  0.5633946  -0.45041627 -0.29130253  0.4208438
+   0.5772648  -0.09793467 -0.17824577  0.21960165]
+ [-0.45003343 -0.40771335 -0.27946213  0.25528738  0.17480093  0.6627858
+   0.15640512 -0.1628811  -0.49835405  0.39907762]
+ [-0.12222731  0.06204303  0.48330024  0.5132864  -0.44646254 -0.01762553
+   0.03138974 -0.33733898 -0.01577938  0.20090973]
+ [ 0.12454645  0.4161576   0.04764605  0.06154099 -0.5921946   0.30975404
+  -0.06719591 -0.06544337  0.6694881  -0.28155822]
+ [-0.03586118 -0.5557082  -0.12576254 -0.0294226   0.4626502  -0.07262938
+   0.07335065  0.6954893   0.23995788 -0.33204713]
+ [-0.04431728  0.574403   -0.23925976  0.28454012  0.5663962  -0.6394911
+   0.36424887  0.32940096  0.51458013 -0.1287082 ]
+ [ 0.41349268 -0.03658577 -0.15027682  0.294058   -0.2737025  -0.02500981
+  -0.11005286 -0.33063442 -0.151764   -0.31963792]
+ [-0.0524633  -0.5756458   0.44647643  0.15674064 -0.26457483  0.2539736
+  -0.07035354  0.6333569   0.24957637 -0.42015842]
+ [-0.30826747  0.06891067  0.32927155 -0.4807715  -0.24298994  0.09878322
+  -0.42163873 -0.53342736  0.00729575 -0.27889895]
+ [-0.02474111  0.07508587  0.43389285 -0.17352545 -0.28332418  0.39661312
+   0.35547164  0.3340422   0.18834375  0.43538415]
+ [ 0.36403415 -0.52530026 -0.31073266 -0.12300297  0.2848569   0.37233478
+   0.05626705 -0.64052796 -0.36481014 -0.16591164]
+ [ 0.3855156  -0.23931056  0.00776605  0.37517443  0.107596   -0.21874942
+  -0.04413887 -0.330784   -0.37854007  0.05091184]
+ [-0.34460253  0.16571152  0.07456364  0.34568235  0.16109769  0.07323471
+   0.09598342 -0.05379489  0.422433    0.36548343]
+ [-0.11707252 -0.06398193 -0.58275145 -0.28135288 -0.06406472  0.31019288
+   0.11480052 -0.33484071  0.30534273  0.13603981]]
+    b2 = [-0.06319658 -0.04074334  0.0071259   0.01342564 -0.06899747  0.08171966
+ -0.03140001  0.10998739  0.0396684  -0.0475896 ]
+    Z0 = np.matmul(W0, X) + b0
+    A0 = np.relu(Z0)
+    Z1 = np.matmul(W1, A0) + b1
+    A1 = np.relu(Z1)
+    Z2 = np.matmul(W2, A1) + b2
+    A2 = np.relu(Z2)
+    Z3 = np.matmul(W3, A2) + b3
+    A3 = self.softmax(Z3)
+    predictions = A3 > 0.5
+
+    return predictions
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_220 (Dense)            (None, 18)                252       
+_________________________________________________________________
+dense_221 (Dense)            (None, 17)                323       
+_________________________________________________________________
+dense_222 (Dense)            (None, 10)                180       
+=================================================================
+Total params: 755
+Trainable params: 755
+Non-trainable params: 0
+_________________________________________________________________
+Total elapsed time for obtaining final network: 1296.0771617889404 s.
+Proceeding to test obtained network with whole dataset:
+Input data shape: (1797, 13), Output data shape: (1797, 10).
+Neural Network to test:
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_220 (Dense)            (None, 18)                252       
+_________________________________________________________________
+dense_221 (Dense)            (None, 17)                323       
+_________________________________________________________________
+dense_222 (Dense)            (None, 10)                180       
+=================================================================
+Total params: 755
+Trainable params: 755
+Non-trainable params: 0
+_________________________________________________________________
+
+  32/1797 [..............................] - ETA: 0s
+ 416/1797 [=====>........................] - ETA: 0s
+ 800/1797 [============>.................] - ETA: 0s
+1344/1797 [=====================>........] - ETA: 0s
+1797/1797 [==============================] - 0s 109us/step
+Obtained Network Evaluation Score of: 0.9437952142459655
+Obtained final score of: 0.9437952142459655.

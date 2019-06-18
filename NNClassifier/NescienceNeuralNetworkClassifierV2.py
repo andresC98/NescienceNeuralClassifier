@@ -61,7 +61,7 @@ queue = Queue(10)
 class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
-        self.log = open("log.dat", "a")
+        self.log = open("log.txt", "w")
 
     def write(self, message):
         self.terminal.write(message)
@@ -416,6 +416,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         final_score = self.score(X[:,np.where(self.viu)[0]],to_categorical(y))
         print("Obtained final score of: {}.".format(final_score))
 
+        time.sleep(2) #to make sure to log. 
+
         return self
  
     
@@ -452,6 +454,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         print("Neural Network to test:")
         self.nn.summary()
         score = self.nn.evaluate(X, y, verbose=1)[1] #evaluate returns (loss, accuracy) tuple
+        print("Obtained Network Evaluation Score of: {}".format(score))
         
         return score      
 
