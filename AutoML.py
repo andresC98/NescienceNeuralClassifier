@@ -165,15 +165,18 @@ thread_consumer.start()
 # Prepare data and model
 
 # scikit - Digits <----
-# data = load_digits()
+data = load_digits()
+X = data.data
+y = data.target
+
+#Breast cancer
+# from sklearn.datasets import load_breast_cancer
+# data = load_breast_cancer()
 # X = data.data
 # y = data.target
 
-#Breast cancer
-from sklearn.datasets import load_breast_cancer
-data = load_breast_cancer()
-X = data.data
-y = data.target
+# fashion_mnist = keras.datasets.fashion_mnist
+# (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
 
 # Numerai

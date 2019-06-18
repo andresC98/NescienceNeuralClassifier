@@ -196,7 +196,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             print("WARNING: Invalid Nescience")
             if self.verbose:
                 print("Miscoding: ", self._miscoding(self.msd, self.viu), "Inaccuracy: ", self._inaccuracy(self.nn, msdX), "Redundancy: ", self._redundancy(self.nn), "Nescience: ", self._nescience(self.msd, self.viu, self.nn, msdX))
-                print(self._cnn2str())
+                print(self._nn2str())
             return self
             
         if self.verbose:
@@ -506,40 +506,47 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     def _inaccuracy(self, nn, X):
                         
         # Compute the list of errors
-        pred = self.predict(nn, X)        
-        error = list()
-        for i in range(X.shape[0]):
-            if pred[i] != np.argmax(self.y, axis=1)[i]:
-                error.append(list(X[i,:]))
+        errors = list()
+        pred = self.predict(nn, X)
+        y = np.argmax(self.y, axis = 1)
+        for i in np.arange(X.shape[0]):
+            if pred[i] != y[i]:
+                #new_error = list(X[i][np.where(attr_in_use)])
+                new_error = list(X[i])
+                new_error.append(y[i])
+                errors.append(new_error)
+        
+        errors = np.array(errors)
 
         ldm   = 0
         ldata = 0
-        print(error)
+
         # Compute the compressed length of errors
-        for i in np.arange(len(error[0])-1):
-            ldm = ldm + self._codelength_continuous(error[:,i])
+        print("Errors shape: {}.".format(errors.shape))
+        for i in np.arange(len(errors[0])-1):
+            ldm = ldm + self._codelength_continuous(errors[:,i])
         
-        ldm = ldm + self._codelength_discrete(error[:,-1].astype(np.int))
-        
+        ldm = ldm + self._codelength_discrete(errors[:,-1].astype(np.int))
         # Compute the compressed length of data in use
+
+        lcdX = np.zeros(X.shape[1])
+        for i in np.arange(X.shape[1]):                
+            lcdX[i] = self._codelength_continuous(X[:,i])
         
-        self.lcdY = self._codelength_discrete(self.y)
-        self.lcdX = np.zeros(self.X.shape[1])
-        
-        for i in np.arange(self.X.shape[1]):                
-            self.lcdX[i] = self._codelength_continuous(self.X[:,i])
+        lcdY = self._codelength_discrete(y)
 
         for i in np.arange(X.shape[1]):
-
             if self.viu[i] == 0:
                 continue
-            ldata = ldata + self.lcdX[i]
+
+            ldata = ldata + lcdX[i]
         
-        ldata = ldata + self._codelength_discrete(self.y)
+        ldata = ldata + lcdY
             
         inaccuracy = ldm / ldata
-        print("Computed innacuracy of: {}".format(inaccuracy))
-        
+
+        print("[DEBUG] inaccuracy = {}".format(inaccuracy))
+
         return inaccuracy
 
     """
@@ -773,6 +780,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         for i in np.arange(len(unique)):
             code[i] = - np.log2( count[i] / len(Pred) )
 
+        print(code[Pred].shape)
         ldata = np.sum(code[Pred])            
             
         return ldata
