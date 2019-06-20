@@ -1,0 +1,103 @@
+[DEBUG] Fitting initial NN.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_1 (Dense)              (None, 3)                 6         
+_________________________________________________________________
+dense_2 (Dense)              (None, 10)                40        
+=================================================================
+Total params: 46
+Trainable params: 46
+Non-trainable params: 0
+_________________________________________________________________
+[DEBUG] Evaluating initial nn...
+
+  32/1257 [..............................] - ETA: 1s
+1257/1257 [==============================] - 0s 59us/step
+[DEBUG] Keras-Scores obtained: loss:1.943047764003514, acc:0.25934765315425706.
+
+ 32/540 [>.............................] - ETA: 0s
+540/540 [==============================] - 0s 37us/step
+[DEBUG] NN Evaluated Accuracy = 0.2166666673289405.
+Miscoding:  0.942636113254383 Inaccuracy:  0.376425855513308 Redundancy:  0.4495884773662552 Nescience:  0.5049079831857332
+[DEBUG] Testing adding a new feature to cnn. 2 nº of features.
+DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_3 (Dense)              (None, 3)                 9         
+_________________________________________________________________
+dense_4 (Dense)              (None, 10)                40        
+=================================================================
+Total params: 49
+Trainable params: 49
+Non-trainable params: 0
+_________________________________________________________________
+
+ 32/540 [>.............................] - ETA: 0s
+540/540 [==============================] - 0s 111us/step
+[DEBUG] NN Evaluated Accuracy = 0.3851851843021534.
+Added new feature - Nescience:  0.5033156699011128
+[DEBUG] Testing adding a new layer... Current hidden layers: [3, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [4]
+Tolerance: 0.045000000000000005
+[DEBUG] Testing adding a new feature to cnn. 3 nº of features.
+[DEBUG] Testing adding a new layer... Current hidden layers: [3, 3].
+[DEBUG] Testing adding a new unit... Hidden layers: [4]
+Tolerance: 0.04050000000000001
+Final -> Miscoding:  0.8924508123087631 Inaccuracy:  0.38639337112952465 Redundancy:  0.44406392694063923 Nescience:  0.5033156699011128
+def NN(X):
+    W0 = [[ 0.10012363 -0.4936072   0.83020335]
+ [ 0.55206174  0.73460805  0.14462183]]
+    b0 = [-0.46926552  0.12560825 -0.11267762]
+    W1 = [[ 0.88222784  0.02153433 -0.5623552  -0.68301     0.18783453  0.03936198
+   0.10240503  0.20662244  0.28665298 -0.13453676]
+ [-0.6784145   0.02282109  0.12329149  0.136439    0.15178002  0.20582137
+   0.47332337 -0.14043857 -0.3951357  -0.32334885]
+ [-0.04738725  0.15501942  0.17602085  0.29674688  0.09056178 -0.40336335
+  -1.0521361   0.20211272  0.15587619  0.37881547]]
+    b1 = [-0.4694182   0.13221413  1.0079746   0.5009483  -0.8311766   1.1120006
+ -0.51547897 -0.35197583 -0.08370735 -0.5013823 ]
+    Z0 = np.matmul(W0, X) + b0
+    A0 = np.relu(Z0)
+    Z1 = np.matmul(W1, A0) + b1
+    A1 = np.relu(Z1)
+    Z2 = np.matmul(W2, A1) + b2
+    A2 = self.softmax(Z2)
+    predictions = A2 > 0.5
+
+    return predictions
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_3 (Dense)              (None, 3)                 9         
+_________________________________________________________________
+dense_4 (Dense)              (None, 10)                40        
+=================================================================
+Total params: 49
+Trainable params: 49
+Non-trainable params: 0
+_________________________________________________________________
+Total elapsed time for obtaining final network: 80.31819200515747 s.
+Proceeding to test obtained network with whole dataset:
+Input data shape: (1797, 2), Output data shape: (1797, 10).
+Neural Network to test:
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_3 (Dense)              (None, 3)                 9         
+_________________________________________________________________
+dense_4 (Dense)              (None, 10)                40        
+=================================================================
+Total params: 49
+Trainable params: 49
+Non-trainable params: 0
+_________________________________________________________________
+
+  32/1797 [..............................] - ETA: 0s
+1344/1797 [=====================>........] - ETA: 0s
+1797/1797 [==============================] - 0s 40us/step
+
+Obtained Network Evaluation Score of: 0.4156928214352862
+Obtained final score of: 0.4156928214352862.

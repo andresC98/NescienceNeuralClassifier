@@ -1,5 +1,12 @@
+#@title
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+#########################################################
+# Nescience Neural Network Classifier Notebook version  #
+#########################################################
+
+
 
 """
 
@@ -32,6 +39,7 @@ import numpy  as np
 import pandas as pd
 import collections
 import time , sys
+from random import randint
 
 # Compression algorithms
 import bz2
@@ -51,26 +59,13 @@ from keras.models import Sequential
 from keras import optimizers
 from keras import losses
 from keras.utils import to_categorical
-
+from keras import backend as K
 
 from queue import Queue
 
 queue = Queue(10)
-
-#LOGGING DEBUG
-class Logger(object):
-    def __init__(self):
-        self.terminal = sys.stdout
-        self.log = open("log.txt", "w")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)  
-
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
+import os
+import tensorflow as tf
 
 class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     
@@ -81,7 +76,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     INVALID_INACCURACY = -1    # If algorithm cannot be applied to this dataset
     INVALID_REDUNDANCY = -2    # Too small model    
     
-    def __init__(self, niterations=50, learning_rate=0.00001, method="Harmonic", compressor="bz2", backward=False, verbose=False):
+    def __init__(self, niterations=25, learning_rate=0.01, method="Harmonic", compressor="bz2", backward=False, verbose=False):
         """
         Initialization of the model
     
@@ -117,7 +112,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.tol   = 0.05 #originally at 0.05
         self.decay = 0.1 #originally at 0.1
 
-        self.output_num = None
+        self.history = None #Records history of Stats for each algorithm' saved NN
 
     def fit(self, X, y):
         """
@@ -130,8 +125,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
        
         Return the fitted model
         """
-        sys.stdout = Logger()
-               
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
         # TODO: check the input parameters [DONE ?]
         if(len(X.shape) != 2 or len(y.shape) != 1):
             print("Invalid data shape/s of {} and output of {}.\nInput Array must be of format [[x11, x12, x13, ...], ..., [xn1, xn2, ..., xnm]].\nOutput array must be of format:[y1, ..., yn]".format(X.shape, y.shape))
@@ -149,12 +143,15 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.classes_  = np.unique(y)
         self.n_classes = self.classes_.shape[0]
 
+        self.history = [] #no need to be a synchr. queue as it wont be used for real-time graphs 
+
         #time metrics
         start_time = time.time()
 
         # Compute the contribution of each feature to miscoding
         
-        self._initmiscod()
+        #self._initmiscod() #substitute by tcc
+        self.msd = self._tcc() #updated method
         
         if self.backward:
             self.viu = np.ones(self.X.shape[1], dtype=np.int)
@@ -185,14 +182,13 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         msdX = self.X[:,np.where(self.viu)[0]]
 
-        self.output_num = len(np.unique(self.y)) #this depends on dataset used, review.
         #Initial NN construction
         self.nn = Sequential()
-        self.nn.add(Dense(units = self.nu[0], bias_initializer='uniform', kernel_initializer = 'glorot_uniform', activation='relu', input_dim=msdX.shape[1]))
-        self.nn.add(Dense(units = self.output_num,bias_initializer='uniform', kernel_initializer = 'glorot_uniform', activation = 'softmax'))
+        self.nn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1]))
+        self.nn.add(Dense(units = self.n_classes, activation = 'softmax'))
         #adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
         sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
-        self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
+        self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
         #while keras being tested with multiclass classification - softmax
         self.y = to_categorical(self.y) #to use with categorical cross entropy
         self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
@@ -250,16 +246,21 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 msdX = self.X[:,np.where(viu)[0]]
                 #New Keras NN creation
                 print("[DEBUG] Testing adding a new feature to cnn. {} nº of features.".format(msdX.shape[1]))
-                cnn = Sequential()
-                cnn.add(Dense(units = self.nu[0], bias_initializer='uniform',kernel_initializer = 'glorot_uniform', activation='relu', input_dim=msdX.shape[1])) #first layer after inputs
-                for layer in np.arange(len(self.nu)-1):
-                    cnn.add(Dense(units = self.nu[layer+1],bias_initializer='uniform', kernel_initializer = 'glorot_uniform',activation = 'relu'))
-                cnn.add(Dense(units = self.output_num, activation = 'softmax'))
-                #adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-                sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
-                cnn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
-                cnn.fit(x = msdX, y= self.y, verbose=0,batch_size =  32, epochs = self.it)
+                init_t = time.time()
 
+                cnn = Sequential() #network has to be created from scratch, we cannot reuse weights
+                cnn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1])) #first layer after inputs
+                for layer in np.arange(len(self.nu)-1):
+                    cnn.add(Dense(units = self.nu[layer+1], activation = 'relu'))
+                cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
+                # adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+                sgd = optimizers.SGD(lr = self.lr, momentum = 0.9, nesterov = True)
+                cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
+                cnn.fit(x = msdX, y= self.y, verbose=0,batch_size = 32, epochs = self.it)
+
+                network_comp_t = time.time() - init_t
+                print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
+                
                 nsc = self._nescience(self.msd, viu, cnn, msdX)
 
                 if nsc == self.INVALID_INACCURACY:
@@ -290,31 +291,48 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                             print("Removed a feature. Var in use: ", np.sum(self.viu), " Nescience: ", nsc)
                         else:
                             print("Added new feature - Nescience: ", nsc)
-                    
+                else:
+                    pass
+                    #K.clear_session()
+
             #
             # Test adding a new layer
             #
             
             nu = self.nu.copy()
             nu.append(3)
-            # avg_n_nodes = np.ceil(np.mean(self.nu))
-            #nu.append(avg_n_nodes)
+            # if(randint(0, 100) > 75):
+            #     nu.append(2*int(np.ceil(np.mean(nu))))
+            # else:
+            #     nu.append(int(np.ceil(np.mean(nu))))
            
-            print("[DEBUG] Testing adding a new layer... Current hidden layers: {}.".format(nu))            
-            msdX = self.X[:,np.where(self.viu)[0]]
+            print("[DEBUG] Testing adding a new layer... Current hidden layers: {}.".format(nu)) 
 
+            msdX = self.X[:,np.where(self.viu)[0]]
+            init_t = time.time()
             cnn = Sequential()
-            cnn.add(Dense(units = nu[0],bias_initializer='uniform', kernel_initializer = 'glorot_uniform', activation='relu', input_dim=msdX.shape[1]))
+            cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
             for k, units in enumerate(nu):
                 if(k > 0): #we already added the first hidden layer
-                    cnn.add(Dense(units,bias_initializer='uniform', kernel_initializer = 'glorot_uniform', activation = 'relu'))
+                    cnn.add(Dense(units, activation = 'relu'))
             
-            cnn.add(Dense(units = self.output_num, activation = 'softmax'))
+            cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
+            #reusing weights from previous saved network's layers.
+            # cnn = Sequential()
+            # for layer in self.nn.layers[:-1]: # just exclude last layer from copying
+            #     cnn.add(layer)
+            # for layer in cnn.layers:
+            #     layer.trainable = False #to reuse their weights
+
+            # cnn.add(Dense(units = nu[-1], activation = 'relu')) #adding the extra layer
+            # cnn.add(Dense(units = self.output_num, activation = 'softmax'))
             sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
             # adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.1, amsgrad=False)
-            cnn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
-            cnn.fit(x = msdX, y= self.y, verbose=0,batch_size =  32, epochs = self.it)
+            cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
+            cnn.fit(x = msdX, y= self.y, verbose=0,batch_size = 32, epochs = self.it)
             
+            network_comp_t = time.time() - init_t
+            print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
 
             nsc = self._nescience(self.msd, self.viu, cnn, msdX)
 
@@ -340,30 +358,38 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 self.nn   = cnn
                 self.nu   = nu
                 decreased = True
-
+                
                 if self.verbose:
                     vals, queue = self._update_vals(msdX)
                     print("Added new layer - Nescience: ", nsc)
-            
-            #
-            # Test adding a new unit
-            # for each layer: adds a unit, check nescience
-            
+            else:
+                pass
+                #K.clear_session()
+
+
             for i in np.arange(len(self.nu)): #loops k times (in a NN with K hidden layers)
                 nu = self.nu.copy()
+                # if(randint(0, 100) > 75):
+                #     nu[i] = 2*nu[i]
+                # else:
+                #     nu[i] = nu[i] + 1 #extra node added to hidden layer i     
                 nu[i] = nu[i] + 1 #extra node added to hidden layer i     
                 print("[DEBUG] Testing adding a new unit... Hidden layers: {}".format(nu))            
                 msdX = self.X[:,np.where(self.viu)[0]]
                 
+                init_t = time.time() 
                 cnn = Sequential()
-                cnn.add(Dense(units = nu[0],bias_initializer='uniform', kernel_initializer = 'glorot_uniform', activation='relu', input_dim=msdX.shape[1]))
+                cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
                 for k in np.arange(len(self.nu)-1):
-                    cnn.add(Dense(units = nu[k+1],bias_initializer='uniform', kernel_initializer = 'glorot_uniform', activation='relu'))
-                cnn.add(Dense(units = self.output_num, activation = 'softmax'))
-                sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
+                    cnn.add(Dense(units = nu[k+1], activation='relu'))
+                cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
+                sgd = optimizers.SGD(lr = self.lr, momentum = 0.9, nesterov = True)
                 # adam = optimizers.Adam(lr= self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)   
-                cnn.compile(loss = losses.categorical_crossentropy ,optimizer = 'sgd', metrics=['accuracy'])
-                cnn.fit(x = msdX, y= self.y, verbose=0,batch_size =  32, epochs = self.it)
+                cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
+                cnn.fit(x = msdX, y= self.y, verbose=0,batch_size = 32, epochs = self.it)
+
+                network_comp_t = time.time() - init_t
+                print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
 
                 nsc = self._nescience(self.msd, self.viu, cnn, msdX)
 
@@ -390,12 +416,16 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                         vals, queue = self._update_vals(msdX)
                         print("Added new unit - Nescience: ", nsc)
                         print("[DEBUG] Nescience has been reduced after adding new unit")
+                else:
+                    pass
+                    #K.clear_session()
 
         
             # Update tolerance
             self.tol = self.tol * (1 - self.decay)
             print("Tolerance: " + str(self.tol))
-        
+
+
         # -> end while
                         
         # Print out the best nescience achieved
@@ -429,9 +459,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     
         Return a list of classes predicted
         """
-
         # TODO: Check that we have a model trained
-        
         predictions = nn.predict(X) # Softmax output
         predictions = np.argmax(predictions, axis=1)
         #print("[DEBUG] Predictions after argmax interpretation: {}".format(predictions))
@@ -455,7 +483,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.nn.summary()
         score = self.nn.evaluate(X, y, verbose=1)[1] #evaluate returns (loss, accuracy) tuple
         print("Obtained Network Evaluation Score of: {}".format(score))
-
+        
         return score      
 
     
@@ -545,6 +573,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         
         error = list()
         #print("[DEBUG] Y shape: {}, Pred shape: {}".format(self.y.shape, pred.shape))
+        
         for i in range(X.shape[0]):
             if pred[i] != np.argmax(self.y, axis=1)[i]:
                 error.append(list(X[i,:]))
@@ -662,7 +691,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         x_test = self.X_test[:,np.where(viu)[0]]
         score = self.nn.evaluate(x_test, self.y_test)[1]
-        print("[DEBUG] NN Evaluated Accuracy = {}.".format(score))
+        print("[DEBUG] NN Evaluated Accuracy = {}. Precision: {}. Recall: {}".format(score))
         return score
 
 
@@ -703,61 +732,12 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         return string
     
-            
-    def _display_nn(self, nn, hidden_units):
-
-        self.canvas_size = 400
-        self.top    = .9 * self.canvas_size
-        self.bottom = .1 * self.canvas_size
-        self.left   = .1 * self.canvas_size
-        self.right  = .9 * self.canvas_size
-
-        self.canvas.delete(ALL)
         
-        layer_sizes = [np.sum(self.viu)]
-        layer_sizes = layer_sizes + hidden_units
-        # layer_sizes.append(1) #fixed for multiclass classification (softmax)
-        layer_sizes.append(self.output_num)
-        v_spacing = (self.top - self.bottom)/float(max(layer_sizes))
-        h_spacing = (self.right - self.left)/float(len(layer_sizes) - 1)
-        
-        # Edges
-    
-        for n, (layer_size_a, layer_size_b) in enumerate(zip(layer_sizes[:-1], layer_sizes[1:])):
-        
-            layer_top_a = v_spacing * (layer_size_a - 1)/2. + (self.top + self.bottom)/2.
-            layer_top_b = v_spacing * (layer_size_b - 1)/2. + (self.top + self.bottom)/2.
-                        
-            for m in np.arange(layer_size_a):
-                for o in np.arange(layer_size_b):
-                    self.canvas.create_line(n * h_spacing + self.left,
-                                            layer_top_a - m * v_spacing,
-                                            (n + 1) * h_spacing + self.left,
-                                            layer_top_b - o * v_spacing)
-
-        # Nodes
-
-        for n, layer_size in enumerate(layer_sizes):
-    
-            layer_top = v_spacing * (layer_size - 1)/2. + (self.top + self.bottom)/2.
-        
-            for m in np.arange(layer_size):
-                
-                self.canvas.create_oval(n * h_spacing + self.left - v_spacing/4,
-                                        layer_top - m * v_spacing - v_spacing/4,
-                                        n * h_spacing + self.left + v_spacing/4,
-                                        layer_top - m * v_spacing + v_spacing/4,
-                                        fill="white")
-                
-        self.master.update_idletasks()
-        self.master.update()
-
     '''
     Creates and returns a dictionary with computed metrics (nescience, miscoding, surfeit, innacuracy,
     score and layer sizes), and enqueues it. Used in verbose mode. 
     '''
     def _update_vals(self, msdX):
-
         vals = dict()
         vals["nescience"]   = self._nescience(self.msd, self.viu, self.nn, msdX)
         vals["miscoding"]   = self._miscoding(self.msd, self.viu)
@@ -767,10 +747,85 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         vals["layer_sizes"] = [np.sum(self.viu)]
         vals["layer_sizes"] = vals["layer_sizes"] + self.nu
         # vals["layer_sizes"].append(1) 
-        vals["layer_sizes"].append(self.output_num) #fixed for multiclass 
-        queue.put(vals) #blocks sometimes
+        vals["layer_sizes"].append(self.n_classes) #fixed for multiclass 
+        self.history.append(vals) #only for google colab or notebooks
+        #queue.put(vals) #blocks sometimes
         # queue.put(vals["nescience"])
-
         return vals, queue
 
     
+    """"
+    Compute the length of a discrete variable given a minimal length code
+    """
+    def _codelength_discrete(self, data):
+                
+        unique, count = np.unique(data, return_counts=True)
+        code  = np.zeros(self.n_classes)
+        
+        for i in np.arange(len(unique)):
+            code[i] = - np.log2( count[i] / len(data) )
+
+        ldata = 0
+        for i in np.arange(len(data)):
+            ldata = ldata + code[data[i]]
+            
+        return ldata
+
+    
+    """"
+    Compute the length of a continous variable given a minimal length code
+    """    
+    def _codelength_continuous(self, data):
+
+        if len(np.unique(data)) == 1:
+            Pred = np.zeros(len(data))
+        else:                
+            nbins = int(np.sqrt(len(data)))
+            tmp   = pd.qcut(data, q=nbins, duplicates='drop')
+            Pred  = list(pd.Series(tmp).cat.codes)
+                
+        unique, count = np.unique(Pred, return_counts=True)
+        code  = np.zeros(len(unique))
+        
+        for i in np.arange(len(unique)):
+            code[i] = - np.log2( count[i] / len(Pred) )
+
+        ldata = np.sum(code[Pred])            
+            
+        return ldata
+
+
+def _tcc(self):
+         
+        tcc = list()
+        
+        Resp = self.y
+        unique, count_y = np.unique(Resp, return_counts=True)
+        ldm_y = np.sum(count_y  * ( - np.log2(count_y  / len(Resp))))
+
+        for i in np.arange(self.X.shape[1]):
+
+            # Discretize the feature
+            if len(np.unique(self.X[:,i])) == 1:
+                # Do not split if all the points belong to the same category
+                Pred = np.zeros(len(self.y))
+            else:
+                nbins = int(np.sqrt(len(self.y)))
+                tmp   = pd.qcut(self.X[:,i], q=nbins, duplicates='drop')
+                Pred  = list(pd.Series(tmp).cat.codes)
+
+            Join =  list(zip(Pred, Resp))
+            
+            unique, count_X  = np.unique(Pred, return_counts=True)
+            unique, count_Xy = np.unique(Join, return_counts=True, axis=0)
+            
+            tot = self.X.shape[0]
+
+            ldm_X   = np.sum(count_X  * ( - np.log2(count_X  / tot)))
+            ldm_Xy  = np.sum(count_Xy * ( - np.log2(count_Xy / tot)))
+                       
+            mscd = ( ldm_Xy - min(ldm_X, ldm_y) ) / max(ldm_X, ldm_y)
+                
+            tcc.append(mscd)
+                
+        return np.array(tcc)

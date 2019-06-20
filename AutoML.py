@@ -24,7 +24,7 @@ from threading      import Thread
 # ML
 import numpy as np
 from sklearn.datasets import load_digits
-from NNClassifier.NescienceNeuralNetworkClassifierV2 import *
+from NNClassifier.NescienceNeuralNetworkClassifierV211 import *
 
 count = 1
 
@@ -165,9 +165,19 @@ thread_consumer.start()
 # Prepare data and model
 
 # scikit - Digits <----
-data = load_digits()
-X = data.data
-y = data.target
+# data = load_digits()
+# X = data.data
+# y = data.target
+#alternative MNIST from keras:
+# from keras.datasets import mnist
+# (X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+#Pulsar Star Classification from Kaggle
+from numpy import genfromtxt
+data = genfromtxt('pulsar_stars.csv', delimiter=',')
+data = np.delete(data, 0, 0)
+X = data[:,:8]
+y = data[:,8]
 
 #Breast cancer
 # from sklearn.datasets import load_breast_cancer
