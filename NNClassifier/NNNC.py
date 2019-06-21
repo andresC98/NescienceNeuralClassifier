@@ -114,6 +114,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.decay = 0.1 #originally at 0.1
 
         self.history = None #Records history of Stats for each algorithm' saved NN
+        self.model_hist = None #dataframe with history
 
     def fit(self, X, y, run_until = 0):
         """
@@ -168,25 +169,38 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         #  - one hidden layer
         #  - three units
 
+        #Idea: check total # of features of dataset. Initial network will have input variables
+        #   depending of this number of features, to avoid slow start & stuck.
+        init_ft_space = int(np.ceil(X.shape[1]/8))
+        self.nu[0] = init_ft_space
+        #msd = self.msd.copy()        
+        print("Will start with {} features out of {}.".format(init_ft_space, X.shape[1]))
+        
         if self.backward:
             self.viu[np.where(self.msd == np.max(self.msd))] = 0
         else:            
             self.viu[np.where(self.msd == np.min(self.msd))] = 1
+            
+        if self.backward:
+            self.msd[np.where(self.viu == 0)] = 0
+        else:
+            self.msd[np.where(self.viu)] = 1
 
-        msd = self.msd.copy()
         
-        if self.backward:
-            msd[np.where(self.viu == 0)] = 0
-        else:
-            msd[np.where(self.viu)] = 1
+        for i in np.arange(init_ft_space-1): 
+            
+            if self.backward:
+                self.msd[np.where(self.viu == 0)] = 0
+            else:
+                self.msd[np.where(self.viu)] = 1
 
-        if self.backward:
-            self.viu[np.where(msd == np.max(msd))] = 0
-        else:
-            self.viu[np.where(msd == np.min(msd))] = 0
-
+            if self.backward:
+                self.viu[np.where(self.msd == np.max(self.msd))] = 0
+            else:
+                self.viu[np.where(self.msd == np.min(self.msd))] = 1
+        
         msdX = self.X[:,np.where(self.viu)[0]]
-
+        print("Input dimension: {}".format(msdX.shape[1]))
         #Initial NN construction
         self.nn = Sequential()
         self.nn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1]))
@@ -843,3 +857,34 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 tcc.append(mscd)
 
             return np.array(tcc)
+    
+    def plot_model_acc(self):
+        plt.plot(self.nn.history.history['acc'])
+        plt.plot(self.nn.history.history['val_acc'])
+        plt.title('model accuracy')
+        plt.ylabel('accuracy')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'test'], loc='upper left')
+        return
+
+    def plot_model_loss(self):
+        plt.plot(self.nn.history.history['loss'])
+        plt.plot(self.nn.history.history['val_loss'])
+        plt.title('model loss')
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'test'], loc='upper left')
+        return
+
+    def model_hist(self): #solve issue
+        model_hist = pd.DataFrame(self.history)
+        model_hist = model_hist.reset_index()
+        model_hist.rename(columns={'index':'NN #'}, inplace=True)
+        model_hist['h_l_nodes'] = model_hist['layer_sizes'].apply(lambda x: np.sum(x)-x[0]-self.n_classes) 
+        return model_hist
+
+    def vis_nescience(self,model_hist):
+        fig, axes = plt.subplots(nrows=2, ncols=1)
+        model_hist.plot(x='h_l_nodes',y=['inaccuracy','surfeit','miscoding'],ax=axes[0])
+        model_hist.plot(x='h_l_nodes', y=['nescience'],ax=axes[1])
+        return
