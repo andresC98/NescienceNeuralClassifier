@@ -1,4 +1,5 @@
 #@title
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -114,7 +115,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         self.history = None #Records history of Stats for each algorithm' saved NN
 
-    def fit(self, X, y):
+    def fit(self, X, y, run_until = 0):
         """
         Fit a model (a neural network with a hidden layer) given a dataset
     
@@ -133,13 +134,17 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             #TODO Exit program?
 
         # TODO: test_size should be large enought, not a percentage of data
-        self.X, self.X_test, self.y, self.y_test = train_test_split(X, y, test_size=0.3)
+#         self.X, self.X_test, self.y, self.y_test = train_test_split(X, y, test_size=0.3)
 
-        self.X      = np.array(self.X)
-        self.X_test = np.array(self.X_test)
-        self.y      = np.array(self.y)
-        self.y_test = np.array(self.y_test)
-
+#         self.X      = np.array(self.X)
+#         self.X_test = np.array(self.X_test)
+#         self.y      = np.array(self.y)
+#         self.y_test = np.array(self.y_test)
+           
+        self.X = np.array(X)
+        self.y = np.array(y)
+        #validation splits will be done in each .fit automatically.
+        #added smth
         self.classes_  = np.unique(y)
         self.n_classes = self.classes_.shape[0]
 
@@ -191,18 +196,18 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
         #while keras being tested with multiclass classification - softmax
         self.y = to_categorical(self.y) #to use with categorical cross entropy
-        self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
+#         self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
         
         #NN fit
         print("[DEBUG] Fitting initial NN.")
-        self.nn.fit(x = msdX, y= self.y, verbose=0,batch_size = 32, epochs = self.it)
+        self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
         
         self.nn.summary()
         print("[DEBUG] Evaluating initial nn...")
         score = self.nn.evaluate(msdX, self.y)
         print("[DEBUG] Keras-Scores obtained: {}:{}, {}:{}.".format(self.nn.metrics_names[0],score[0],self.nn.metrics_names[1],score[1]))
         self.nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
-
+        
         if self.nsc == self.INVALID_INACCURACY:
             # There is anything more we can do with this dataset
             # since current model is already nearly perfect
@@ -218,8 +223,13 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         
         # While the nescience decreases
         decreased = True        
+        iter = 0
         while (decreased):
-            
+            iter+=1
+            print("Run #{}.".format(iter))
+            if(run_until != 0 and iter > run_until):
+                print("Stopped algorithm, max runs achieved.")
+                break
             decreased = False
 
             #
@@ -256,13 +266,14 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 # adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
                 sgd = optimizers.SGD(lr = self.lr, momentum = 0.9, nesterov = True)
                 cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
-                cnn.fit(x = msdX, y= self.y, verbose=0,batch_size = 32, epochs = self.it)
+                cnn.fit(x = msdX, y= self.y,validation_split=0.33, verbose=0,batch_size = 32, epochs = self.it)
 
                 network_comp_t = time.time() - init_t
                 print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
                 
                 nsc = self._nescience(self.msd, viu, cnn, msdX)
-
+                if(nsc == 0):
+                    break
                 if nsc == self.INVALID_INACCURACY:
                     # We cannot do anything more with this dataset
                     self.nsc = nsc
@@ -329,13 +340,14 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
             # adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.1, amsgrad=False)
             cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
-            cnn.fit(x = msdX, y= self.y, verbose=0,batch_size = 32, epochs = self.it)
+            cnn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
             
             network_comp_t = time.time() - init_t
             print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
 
             nsc = self._nescience(self.msd, self.viu, cnn, msdX)
-
+            if(nsc == 0):
+                    break
 
             if nsc == self.INVALID_INACCURACY:
                     # We cannot do anything more with this dataset
@@ -386,13 +398,14 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 sgd = optimizers.SGD(lr = self.lr, momentum = 0.9, nesterov = True)
                 # adam = optimizers.Adam(lr= self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)   
                 cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
-                cnn.fit(x = msdX, y= self.y, verbose=0,batch_size = 32, epochs = self.it)
+                cnn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
 
                 network_comp_t = time.time() - init_t
                 print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
 
                 nsc = self._nescience(self.msd, self.viu, cnn, msdX)
-
+                if(nsc == 0):
+                    break
                 if nsc == self.INVALID_INACCURACY:
                     # We cannot do anything more with this dataset
                     self.nsc = nsc
@@ -689,9 +702,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     """
     def _score(self, nn, viu):
 
-        x_test = self.X_test[:,np.where(viu)[0]]
-        score = self.nn.evaluate(x_test, self.y_test)[1]
-        print("[DEBUG] NN Evaluated Accuracy = {}. Precision: {}. Recall: {}".format(score))
+#         x_test = self.X_test[:,np.where(viu)[0]]
+        x = self.X[:,np.where(viu)[0]]
+        score = self.nn.evaluate(x, self.y)[1]
+        print("[DEBUG] NN Evaluated Accuracy = {}.".format(score))
         return score
 
 
@@ -795,37 +809,37 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         return ldata
 
 
-def _tcc(self):
-         
-        tcc = list()
-        
-        Resp = self.y
-        unique, count_y = np.unique(Resp, return_counts=True)
-        ldm_y = np.sum(count_y  * ( - np.log2(count_y  / len(Resp))))
+    def _tcc(self):
 
-        for i in np.arange(self.X.shape[1]):
+            tcc = list()
 
-            # Discretize the feature
-            if len(np.unique(self.X[:,i])) == 1:
-                # Do not split if all the points belong to the same category
-                Pred = np.zeros(len(self.y))
-            else:
-                nbins = int(np.sqrt(len(self.y)))
-                tmp   = pd.qcut(self.X[:,i], q=nbins, duplicates='drop')
-                Pred  = list(pd.Series(tmp).cat.codes)
+            Resp = self.y
+            unique, count_y = np.unique(Resp, return_counts=True)
+            ldm_y = np.sum(count_y  * ( - np.log2(count_y  / len(Resp))))
 
-            Join =  list(zip(Pred, Resp))
-            
-            unique, count_X  = np.unique(Pred, return_counts=True)
-            unique, count_Xy = np.unique(Join, return_counts=True, axis=0)
-            
-            tot = self.X.shape[0]
+            for i in np.arange(self.X.shape[1]):
 
-            ldm_X   = np.sum(count_X  * ( - np.log2(count_X  / tot)))
-            ldm_Xy  = np.sum(count_Xy * ( - np.log2(count_Xy / tot)))
-                       
-            mscd = ( ldm_Xy - min(ldm_X, ldm_y) ) / max(ldm_X, ldm_y)
-                
-            tcc.append(mscd)
-                
-        return np.array(tcc)
+                # Discretize the feature
+                if len(np.unique(self.X[:,i])) == 1:
+                    # Do not split if all the points belong to the same category
+                    Pred = np.zeros(len(self.y))
+                else:
+                    nbins = int(np.sqrt(len(self.y)))
+                    tmp   = pd.qcut(self.X[:,i], q=nbins, duplicates='drop')
+                    Pred  = list(pd.Series(tmp).cat.codes)
+
+                Join =  list(zip(Pred, Resp))
+
+                unique, count_X  = np.unique(Pred, return_counts=True)
+                unique, count_Xy = np.unique(Join, return_counts=True, axis=0)
+
+                tot = self.X.shape[0]
+
+                ldm_X   = np.sum(count_X  * ( - np.log2(count_X  / tot)))
+                ldm_Xy  = np.sum(count_Xy * ( - np.log2(count_Xy / tot)))
+
+                mscd = ( ldm_Xy - min(ldm_X, ldm_y) ) / max(ldm_X, ldm_y)
+
+                tcc.append(mscd)
+
+            return np.array(tcc)
