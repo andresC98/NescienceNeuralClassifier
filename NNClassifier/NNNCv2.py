@@ -264,7 +264,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             iter+=1
             print("Run #{}.".format(iter))
             if(run_until != 0 and iter > run_until):
-                print("Stopped algorithm, max runs achieved.")
+                print("Stopped algorithm, max runs achieved. {} out of {}".format(iter,run_until))
                 break
             decreased = False
 
@@ -492,7 +492,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             print("Total elapsed time for obtaining final network: {} s.".format(elapsed_time))
 
         print("Proceeding to test obtained network with whole dataset:")
-        final_score = self.score(X[:,np.where(self.viu)[0]],to_categorical(y))
+        final_score = self.score(X[:,np.where(self.viu)[0]],self.y))
+
         print("Obtained final score of: {}.".format(final_score))
 
         time.sleep(2) #to make sure to log. 
@@ -830,7 +831,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 
         unique, count = np.unique(Pred, return_counts=True)
         code  = np.zeros(len(unique))
-        
+        print("Length of code: {}".format(len(code)))
         for i in np.arange(len(unique)):
             code[i] = - np.log2( count[i] / len(Pred) )
 
@@ -891,7 +892,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         recall = (true_p) / (true_p + false_n )
         print("Accuracy: {}, Precision: {} , Recall: {}".format(accuracy,precision,recall))
         return
-        
+
     def plot_model_acc(self):
         plt.plot(self.nn.history.history['acc'])
         plt.plot(self.nn.history.history['val_acc'])
