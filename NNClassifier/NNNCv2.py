@@ -42,6 +42,7 @@ import pandas as pd
 import collections
 import time , sys
 from random import randint
+import matplotlib.pyplot as plt
 
 # Compression algorithms
 import bz2
@@ -53,6 +54,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import train_test_split
 
 from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix
 
 # Keras 
 from keras.layers import Input, Dense
@@ -872,6 +874,24 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
             return np.array(tcc)
     
+
+    def get_model_scores(self,X_test,y_test):
+        y_pred = self.nn.predict(X_test[:,np.where(self.viu)[0]])
+        y_test = to_categorical(y_test)
+        matrix = confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))
+
+        true_n= matrix[0,0]
+        false_n = matrix[1,0]
+        false_p = matrix[0,1]
+        true_p= matrix[1,1]
+
+        print("True Positives:{}\nFalse Positives:{}\nFalse Negatives:{}\nTrue Negatives:{}".format(true_p,false_p,false_n,true_n))
+        accuracy = (true_p + true_n) / (true_p + false_n+true_n + false_p)
+        precision = (true_p) / (true_p + false_p)
+        recall = (true_p) / (true_p + false_n )
+        print("Accuracy: {}, Precision: {} , Recall: {}".format(accuracy,precision,recall))
+        return
+        
     def plot_model_acc(self):
         plt.plot(self.nn.history.history['acc'])
         plt.plot(self.nn.history.history['val_acc'])
@@ -890,7 +910,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         plt.legend(['train', 'test'], loc='upper left')
         return
 
-    def model_hist(self): #solve issue
+    def get_model_hist(self): #solve issue
         model_hist = pd.DataFrame(self.history)
         model_hist = model_hist.reset_index()
         model_hist.rename(columns={'index':'NN #'}, inplace=True)
