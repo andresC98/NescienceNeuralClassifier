@@ -18,7 +18,7 @@ Building optimal neural networks based on the minimum nescience principle
 @mail:   rgarcialeiva@gmail.com
 @web:    http://www.mathematicsunknown.com/
 @copyright: All rights reserved
-@version: 0.1 (13 Feb, 2018)
+@version: 0.2 (25 Jun, 2019)
 
 The following internal attributes will be used
 
@@ -167,6 +167,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.lcdY = self._codelength_discrete(self.y)
     
         self.lcdX = np.zeros(self.X.shape[1])
+        print(self.X.shape[1])
         for i in np.arange(self.X.shape[1]):                
             self.lcdX[i] = self._codelength_continuous(self.X[:,i])
         
@@ -490,9 +491,12 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             self.nn.summary()
             elapsed_time = time.time() - start_time
             print("Total elapsed time for obtaining final network: {} s.".format(elapsed_time))
-
+        
         print("Proceeding to test obtained network with whole dataset:")
-        final_score = self.score(X[:,np.where(self.viu)[0]],self.y))
+
+        print(self.y)
+        final_score = self.nn.evaluate(X[:,np.where(self.viu)[0]],self.y)
+        # final_score = self.score(X[:,np.where(self.viu)[0]],self.y)
 
         print("Obtained final score of: {}.".format(final_score))
 
@@ -538,55 +542,6 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
     
     """
-    Compute the contribution of each feature to miscoding
-    
-    TODO: Somehow we should penalize non-contributing features
-    """
-
-    def _initmiscod(self):
-         
-        msd = list()
-
-        for i in range(0, self.X.shape[1]):
-
-            Pred = list(pd.cut(self.X[:,i], bins=100, labels=range(0, 100)))
-            Resp = self.y
-            Join =  list(zip(Pred, Resp))
-
-            count_X  = collections.Counter(Pred)
-            count_y  = collections.Counter(Resp)
-            count_Xy = collections.Counter(Join)
-    
-            tot_X = self.X.shape[0]
-
-            ldm_X  = 0
-            for key in count_X.keys():
-                ldm_X = ldm_X + count_X[key] * ( - np.log2(count_X[key] / tot_X))
-    
-            ldm_y  = 0
-            for key in count_y.keys():
-                ldm_y = ldm_y + count_y[key] * ( - np.log2(count_y[key] / len(self.y)))
-
-            ldm_Xy  = 0
-            for key in count_Xy.keys():
-                ldm_Xy = ldm_Xy + count_Xy[key] * ( - np.log2(count_Xy[key] / len(self.y)))
-       
-            K_yX = ldm_Xy - ldm_X
-            # K_Xy = ldm_Xy - ldm_y
-    
-            # TODO: It should be something like:
-            # mscd = max(K_yX, K_Xy) / max(ldm_X, ldm_y) / self.X.shape[1]
-            
-            mscd = K_yX / ldm_y 
-
-            msd.append(mscd)
-
-        # self.msd = np.array(msd) / np.sum(msd)
-        self.msd = np.array(msd)
-        return    
-
-    
-    """
     Compute the miscoding of the dataset used by the current model
       
     Return the miscoding
@@ -601,13 +556,9 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
           
     
     """
-    Compute inaccuracy the current tree
-
-    Warning: If the inaccuracy is a negative number it should not be used
-
-    TODO: Perhaps I should add y[i] to the error string
-      
-    Return the inaccuracy
+    Computes the inaccuracy of the model
+        
+    Returns the inaccuracy (float)
     """
     #updated and modified to work with current Nescience library
     def _inaccuracy(self, nn, X):
@@ -648,11 +599,11 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         return inaccuracy
 
     """
-    Compute the redundancy of the current tree
+    Compute the redundancy of the current model (string-based representation)
     
     Warning: If the redundancy is a negative number it should not be used
          
-    Return the redundancy of the tree
+    Return the redundancy (float) of the model.
     """
     def _redundancy(self, nn):
     
@@ -677,7 +628,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
 
     """
-    Compute the nescience of a tree,
+    Compute the nescience of a model,
     using the method specified by the user
     
     Warning: If the nescience is a negative number it should not be used
@@ -732,7 +683,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     """
     def _score(self, nn, viu):
 
-#         x_test = self.X_test[:,np.where(viu)[0]]
+        #x_test = self.X_test[:,np.where(viu)[0]]
         x = self.X[:,np.where(viu)[0]]
         score = self.nn.evaluate(x, self.y)[1]
         print("[DEBUG] NN Evaluated Accuracy = {}.".format(score))
@@ -792,7 +743,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         vals["layer_sizes"] = vals["layer_sizes"] + self.nu
         # vals["layer_sizes"].append(1) 
         vals["layer_sizes"].append(self.n_classes) #fixed for multiclass 
-        self.history.append(vals) #only for google colab or notebooks
+        self.history.append(vals) #ofor google colab or notebooks (visualization)
         #queue.put(vals) #blocks sometimes
         # queue.put(vals["nescience"])
         return vals, queue
@@ -823,23 +774,32 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     def _codelength_continuous(self, data):
 
         if len(np.unique(data)) == 1:
+            #print("Data:{}".format(data))
             Pred = np.zeros(len(data))
         else:                
+            #print("Data:{}".format(data))
             nbins = int(np.sqrt(len(data)))
+            #print("nbins: {}.".format(nbins))
             tmp   = pd.qcut(data, q=nbins, duplicates='drop')
             Pred  = list(pd.Series(tmp).cat.codes)
                 
         unique, count = np.unique(Pred, return_counts=True)
         code  = np.zeros(len(unique))
-        print("Length of code: {}".format(len(code)))
+        #print("Length of code: {}".format(len(code)))
         for i in np.arange(len(unique)):
             code[i] = - np.log2( count[i] / len(Pred) )
 
+        #print("PRED: ".format(Pred))
         ldata = np.sum(code[Pred])            
             
         return ldata
 
 
+    """
+    Compute the conditional complexity of the target given a feature
+          
+    Return a numpy array with the conditional complexities
+    """
     def _tcc(self):
 
             tcc = list()
@@ -875,7 +835,11 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
             return np.array(tcc)
     
+    """
+    Computes the confusion matrix for a given evaluation dataset to test the model.
 
+    Prints Accuracy, Precision and Recall metrics.
+    """
     def get_model_scores(self,X_test,y_test):
         y_pred = self.nn.predict(X_test[:,np.where(self.viu)[0]])
         y_test = to_categorical(y_test)
@@ -893,6 +857,9 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         print("Accuracy: {}, Precision: {} , Recall: {}".format(accuracy,precision,recall))
         return
 
+    """
+    Plots Train and Test accuracy of the model obtained across train epochs.
+    """
     def plot_model_acc(self):
         plt.plot(self.nn.history.history['acc'])
         plt.plot(self.nn.history.history['val_acc'])
@@ -901,7 +868,9 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         plt.xlabel('epoch')
         plt.legend(['train', 'test'], loc='upper left')
         return
-
+    """
+    Plots Train and Test loss of the model obtained across train epochs.
+    """
     def plot_model_loss(self):
         plt.plot(self.nn.history.history['loss'])
         plt.plot(self.nn.history.history['val_loss'])
@@ -911,13 +880,23 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         plt.legend(['train', 'test'], loc='upper left')
         return
 
-    def get_model_hist(self): #solve issue
+    """
+    Returns a dataframe containing algorithm history of models evaluated.
+
+    Contains columns: 
+    [h_l_sizes, #of nodes, nescience, inaccuracy, redundancy, Miscoding , Score]
+    """
+    def get_model_hist(self): 
         model_hist = pd.DataFrame(self.history)
         model_hist = model_hist.reset_index()
         model_hist.rename(columns={'index':'NN #'}, inplace=True)
         model_hist['h_l_nodes'] = model_hist['layer_sizes'].apply(lambda x: np.sum(x)-x[0]-self.n_classes) 
         return model_hist
 
+    """
+    Given a model dataframe history, plots Nescience and Inaccuracy, 
+    Miscoding and Redundancy vs number of nodes used.
+    """
     def vis_nescience(self,model_hist):
         fig, axes = plt.subplots(nrows=2, ncols=1)
         model_hist.plot(x='h_l_nodes',y=['inaccuracy','surfeit','miscoding'],ax=axes[0])
