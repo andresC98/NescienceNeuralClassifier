@@ -119,7 +119,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.n_classes = None
 
         self.tol   = 0.05 #originally at 0.05
-        self.decay = 0.15 #originally at 0.1
+        self.decay = 0.1 #originally at 0.1
 
         self.history = None #Records history of Stats for each algorithm' saved NN
         self.model_hist = None #dataframe with history
@@ -155,7 +155,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         #self.y_test = np.array(self.y_test)
         
         best_nsc = 1 #holds the best nsc achieved so far by the algorithm
-        best_nn = None #holds the NN associated with that nescience
+        best_config = None #holds the NN associated with that nescience, its vius and msd
 
         self.X = np.array(X)
         #self.y = np.array(y)
@@ -191,44 +191,33 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         else:
             self.viu = np.zeros(self.X.shape[1], dtype=np.int)
 
-        # Create the initial neural network
-        #  - two features - UPDATED WITH sqrt N total features
-        #  - one hidden layer
-        #  - three units
 
         #Idea: check total # of features of dataset. Initial network will have input variables
         #   depending of this number of features, to avoid slow start & stuck.
         #init_ft_space = int(np.ceil(X.shape[1]/8)) #TODO replace with sqrt
         init_ft_space = int(np.sqrt(X.shape[1]))
         self.nu[0] = init_ft_space
-        #msd = self.msd.copy()        
+        msd = self.msd.copy()    
+        msd = 1-msd    
         print("Search will start with {} features out of {}.".format(init_ft_space, X.shape[1]))
     
         for i in np.arange(init_ft_space): 
+                            
             if self.backward:
-                self.viu[np.where(self.msd == np.min(self.msd))] = 0
-            else:            
-                self.viu[np.where(self.msd == np.max(self.msd))] = 1
-                
-            if self.backward:
-                self.msd[np.where(self.viu == 0)] = 1
+                msd[np.where(self.viu == 0)] = 0
             else:
-                self.msd[np.where(self.viu)] = 0
+                msd[np.where(self.viu)] = 1
 
-        
-        # for i in np.arange(init_ft_space): 
-            
-        #     if self.backward:
-        #         self.msd[np.where(self.viu == 0)] = 0
-        #     else:
-        #         self.msd[np.where(self.viu)] = 1
+            if self.backward:
+                self.viu[np.where(msd == np.max(msd))] = 1
+            else:            
+                self.viu[np.where(msd == np.min(msd))] = 1
 
-        #     if self.backward:
-        #         self.viu[np.where(self.msd == np.min(self.msd))] = 0
-        #     else:
-        #         self.viu[np.where(self.msd == np.max(self.msd))] = 1
+        # Create the initial neural network
+        #  - two features - UPDATED WITH sqrt N total features
+        #  - one hidden layer
+        #  - three units
         
-        print("Variables in use: {}".format(self.viu))
         msdX = self.X[:,np.where(self.viu)[0]]
         print("Input dimension: {}".format(msdX.shape[1]))
         #Initial NN construction
@@ -252,7 +241,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         print("[DEBUG] Keras-Scores obtained: {}:{}, {}:{}.".format(self.nn.metrics_names[0],score[0],self.nn.metrics_names[1],score[1]))
         self.nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
         best_nsc = self.nsc
-        best_nn = self.nn
+        best_config = (self.nn, self.viu)
+        #best_nn = self.nn
 
         if self.nsc == self.INVALID_INACCURACY:
             # There is anything more we can do with this dataset
@@ -318,7 +308,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 network_comp_t = time.time() - init_t
                 print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
                 
-                nsc = self._nescience(self.msd, viu, cnn, msdX)
+                nsc = self._nescience(msd, viu, cnn, msdX)
+                #nsc = self._nescience(self.msd, viu, cnn, msdX)
                 if(nsc == 0):
                     break
                 if nsc == self.INVALID_INACCURACY:
@@ -340,7 +331,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                     #cnn.summary()
                     if(nsc < best_nsc):
                         best_nsc = nsc
-                        best_nn = cnn
+                        best_config = (cnn, viu)
+                        #best_nn = cnn
                     decreased = True
                     self.nsc = nsc
                     self.nn   = cnn
@@ -417,7 +409,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 #cnn.summary()
                 if(nsc < best_nsc):
                     best_nsc = nsc
-                    best_nn = cnn
+                    best_config = (cnn, self.viu)
+                    #best_nn = cnn
                 self.nsc  = nsc
                 self.nn   = cnn
                 self.nu   = nu
@@ -474,7 +467,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                     #cnn.summary()
                     if(nsc < best_nsc):
                         best_nsc = nsc
-                        best_nn = cnn
+                        best_config = (cnn, self.viu)
+                        # best_nn = cnn
                     self.nsc  = nsc
                     self.nn   = cnn
                     self.nu   = nu
@@ -495,7 +489,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
 
         # -> end while
-        self.nn = best_nn
+        self.nn, self.viu = best_config #unpack saved best record.
+        #self.nn = best_nn
         # Print out the best nescience achieved
         if self.verbose:
             
@@ -791,23 +786,33 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     def _codelength_continuous(self, data):
         if len(np.unique(data)) == 1:
             Pred = np.zeros(len(data),dtype=np.int)
-        else:                
+        else:
             nbins = int(np.sqrt(len(data)))
             tmp   = pd.qcut(data, q=nbins, duplicates='drop')
             Pred  = list(pd.Series(tmp).cat.codes)
+            Pred = np.array(Pred)
                 
         unique, count = np.unique(Pred, return_counts=True)
+            
         code  = np.zeros(len(unique))
-
+        
         for i in np.arange(len(unique)):
             code[i] = - np.log2( count[i] / len(Pred) )
+        
+        #temporal fix. Fails if tries ldata = np.sum(code[Pred])
+        if(int(np.max(Pred)) == len(code)):
+            code = np.append(code, 0)
+        elif(int(np.max(Pred)) > len(code)):
+            while(int(np.max(Pred)) >= len(code)): #this can be used (remove extra codes)
+                code = np.append(code, 0)
+        ldata = np.sum(code[Pred])
 
-        try: 
-            ldata = np.sum(code[Pred]) 
-        except: 
-            code = np.append(code,0) 
-            print("EXCEPTION. Length of Pred: {}. Length of Code: {}.".format(len(Pred), len(code))) 
-            ldata = np.sum(code[Pred])
+        # try: 
+        #     ldata = np.sum(code[Pred]) 
+        # except: 
+        #     code = np.append(code,0) 
+        #     print("EXCEPTION. Length of Pred: {}. Length of Code: {}.".format(len(Pred), len(code))) 
+        #     ldata = np.sum(code[Pred])
         
         return ldata
 
@@ -858,6 +863,12 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     Prints Accuracy, Precision and Recall metrics.
     """
     def get_model_scores(self,X_test,y_test):
+        if(len(np.unique(y_test)) > 2):
+            print("Multiclass target. Not implemented yet Conf.Matrix.")
+            scores = self.nn.evaluate(X_test[:,np.where(self.viu)[0]], to_categorical(y_test))
+            print("Keras-Scores obtained: {}:{}, {}:{}.".format(self.nn.metrics_names[0],scores[0],self.nn.metrics_names[1],scores[1]))
+
+            return
         y_pred = self.nn.predict(X_test[:,np.where(self.viu)[0]])
         y_test = to_categorical(y_test)
         matrix = confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))
