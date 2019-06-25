@@ -68,7 +68,7 @@ from keras import backend as K
 from queue import Queue
 
 queue = Queue(10)
-import os
+import os, logging
 import tensorflow as tf
 
 class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
@@ -135,7 +135,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
        
         Return the fitted model
         """
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
+        #os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+        logging.disable(logging.WARNING)
+        os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
         # TODO: check the input parameters [DONE ?]
         if(len(X.shape) != 2 or len(y.shape) != 1):
             print("Invalid data shape/s of {} and output of {}.\nInput Array must be of format [[x11, x12, x13, ...], ..., [xn1, xn2, ..., xnm]].\nOutput array must be of format:[y1, ..., yn]".format(X.shape, y.shape))
@@ -150,7 +153,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         #self.X_test = np.array(self.X_test)
         #self.y      = np.array(self.y)    
         #self.y_test = np.array(self.y_test)
-           
+        
+        best_nsc = 1 #holds the best nsc achieved so far by the algorithm
+        best_nn = None #holds the NN associated with that nescience
+
         self.X = np.array(X)
         #self.y = np.array(y)
 
@@ -168,14 +174,13 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     
         self.lcdX = np.zeros(self.X.shape[1])
         print(self.X.shape[1])
-        for i in np.arange(self.X.shape[1]):                
+        for i in np.arange(self.X.shape[1]):
             self.lcdX[i] = self._codelength_continuous(self.X[:,i])
         
         # Compute the contribution of each feature to miscoding
         
         #self._initmiscod() #old method
         self.tcc = self._tcc()
-
         self.norm_mscd = 1 - np.array(self.tcc)
         self.norm_mscd = self.norm_mscd / np.sum(self.norm_mscd)
         self.msd = self.norm_mscd.copy() #for compatibility with rest of the code (check if valid)
@@ -193,33 +198,35 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         #Idea: check total # of features of dataset. Initial network will have input variables
         #   depending of this number of features, to avoid slow start & stuck.
-        init_ft_space = int(np.ceil(X.shape[1]/8)) #replace with sqrt
+        #init_ft_space = int(np.ceil(X.shape[1]/8)) #TODO replace with sqrt
+        init_ft_space = int(np.sqrt(X.shape[1]))
         self.nu[0] = init_ft_space
         #msd = self.msd.copy()        
         print("Search will start with {} features out of {}.".format(init_ft_space, X.shape[1]))
-        
-        if self.backward:
-            self.viu[np.where(self.msd == np.min(self.msd))] = 0
-        else:            
-            self.viu[np.where(self.msd == np.max(self.msd))] = 1
-            
-        if self.backward:
-            self.msd[np.where(self.viu == 0)] = 0
-        else:
-            self.msd[np.where(self.viu)] = 1
-
-        
-        for i in np.arange(init_ft_space-1): 
-            
-            if self.backward:
-                self.msd[np.where(self.viu == 0)] = 0
-            else:
-                self.msd[np.where(self.viu)] = 1
-
+    
+        for i in np.arange(init_ft_space): 
             if self.backward:
                 self.viu[np.where(self.msd == np.min(self.msd))] = 0
-            else:
+            else:            
                 self.viu[np.where(self.msd == np.max(self.msd))] = 1
+                
+            if self.backward:
+                self.msd[np.where(self.viu == 0)] = 1
+            else:
+                self.msd[np.where(self.viu)] = 0
+
+        
+        # for i in np.arange(init_ft_space): 
+            
+        #     if self.backward:
+        #         self.msd[np.where(self.viu == 0)] = 0
+        #     else:
+        #         self.msd[np.where(self.viu)] = 1
+
+        #     if self.backward:
+        #         self.viu[np.where(self.msd == np.min(self.msd))] = 0
+        #     else:
+        #         self.viu[np.where(self.msd == np.max(self.msd))] = 1
         
         print("Variables in use: {}".format(self.viu))
         msdX = self.X[:,np.where(self.viu)[0]]
@@ -233,7 +240,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
         #while keras being tested with multiclass classification - softmax
         self.y = to_categorical(self.y) #to use with categorical cross entropy
-#         self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
+        #self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
         
         #NN fit
         print("[DEBUG] Fitting initial NN.")
@@ -244,7 +251,9 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         score = self.nn.evaluate(msdX, self.y)
         print("[DEBUG] Keras-Scores obtained: {}:{}, {}:{}.".format(self.nn.metrics_names[0],score[0],self.nn.metrics_names[1],score[1]))
         self.nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
-        
+        best_nsc = self.nsc
+        best_nn = self.nn
+
         if self.nsc == self.INVALID_INACCURACY:
             # There is anything more we can do with this dataset
             # since current model is already nearly perfect
@@ -262,6 +271,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         decreased = True        
         iter = 0
         while (decreased):
+            print("Best nsc so far: {}.".format(best_nsc))
             iter+=1
             print("Run #{}.".format(iter))
             if(run_until != 0 and iter > run_until):
@@ -281,9 +291,9 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 viu = self.viu.copy()
             
                 if self.backward:
-                    msd[np.where(viu == 0)] = 0
+                    msd[np.where(viu == 0)] = 1
                 else:
-                    msd[np.where(viu)] = 1
+                    msd[np.where(viu)] = 0 #to avoid adding an existing one
 
                 if self.backward:
                     viu[np.where(msd == np.min(msd))] = 0
@@ -327,8 +337,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 # Save data if nescience has been reduced                        
                 if (nsc - self.tol) < self.nsc:
                     print("DEBUG] Nescience reduced - SAVED THIS CONFIGURATION.")
-                    cnn.summary()
-
+                    #cnn.summary()
+                    if(nsc < best_nsc):
+                        best_nsc = nsc
+                        best_nn = cnn
                     decreased = True
                     self.nsc = nsc
                     self.nn   = cnn
@@ -358,22 +370,22 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
             msdX = self.X[:,np.where(self.viu)[0]]
             init_t = time.time()
-            cnn = Sequential()
-            cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
-            for k, units in enumerate(nu):
-                if(k > 0): #we already added the first hidden layer
-                    cnn.add(Dense(units, activation = 'relu'))
+            # cnn = Sequential()
+            # cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
+            # for k, units in enumerate(nu):
+            #     if(k > 0): #we already added the first hidden layer
+            #         cnn.add(Dense(units, activation = 'relu'))
             
             cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
             #reusing weights from previous saved network's layers.
-            # cnn = Sequential()
-            # for layer in self.nn.layers[:-1]: # just exclude last layer from copying
-            #     cnn.add(layer)
-            # for layer in cnn.layers:
-            #     layer.trainable = False #to reuse their weights
+            cnn = Sequential()
+            for layer in self.nn.layers[:-1]: # just exclude last layer from copying
+                cnn.add(layer)
+            for layer in cnn.layers:
+                layer.trainable = False #to reuse their weights
+            cnn.add(Dense(units = nu[-1], activation = 'relu')) #adding the extra layer
+            cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
 
-            # cnn.add(Dense(units = nu[-1], activation = 'relu')) #adding the extra layer
-            # cnn.add(Dense(units = self.output_num, activation = 'softmax'))
             sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
             # adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.1, amsgrad=False)
             cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
@@ -402,7 +414,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             # Save data if nescience has been reduced                        
             if (nsc - self.tol) < self.nsc:
                 print("DEBUG] SAVED THIS CONFIGURATION.")
-                cnn.summary()
+                #cnn.summary()
+                if(nsc < best_nsc):
+                    best_nsc = nsc
+                    best_nn = cnn
                 self.nsc  = nsc
                 self.nn   = cnn
                 self.nu   = nu
@@ -456,7 +471,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 # Save data if nescience has been reduced                        
                 if (nsc - self.tol) < self.nsc: 
                     print("DEBUG] SAVED THIS CONFIGURATION.")
-                    cnn.summary()
+                    #cnn.summary()
+                    if(nsc < best_nsc):
+                        best_nsc = nsc
+                        best_nn = cnn
                     self.nsc  = nsc
                     self.nn   = cnn
                     self.nu   = nu
@@ -477,7 +495,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
 
         # -> end while
-                        
+        self.nn = best_nn
         # Print out the best nescience achieved
         if self.verbose:
             
@@ -492,9 +510,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             elapsed_time = time.time() - start_time
             print("Total elapsed time for obtaining final network: {} s.".format(elapsed_time))
         
-        print("Proceeding to test obtained network with whole dataset:")
+        print("Proceeding to test obtained network:")
 
-        print(self.y)
         final_score = self.nn.evaluate(X[:,np.where(self.viu)[0]],self.y)
         # final_score = self.score(X[:,np.where(self.viu)[0]],self.y)
 
@@ -533,8 +550,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         # TODO: Check that we have a model trained>
         #Keras returns accuracy (mean accuracy). Is the same? (1-mean error === mean acc.)
         print("Input data shape: {}, Output data shape: {}.".format(X.shape, y.shape))
-        print("Neural Network to test:")
-        self.nn.summary()
+        # print("Neural Network to test:")
+        # self.nn.summary()
         score = self.nn.evaluate(X, y, verbose=1)[1] #evaluate returns (loss, accuracy) tuple
         print("Obtained Network Evaluation Score of: {}".format(score))
         
@@ -772,26 +789,26 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     Compute the length of a continous variable given a minimal length code
     """    
     def _codelength_continuous(self, data):
-
         if len(np.unique(data)) == 1:
-            #print("Data:{}".format(data))
-            Pred = np.zeros(len(data))
+            Pred = np.zeros(len(data),dtype=np.int)
         else:                
-            #print("Data:{}".format(data))
             nbins = int(np.sqrt(len(data)))
-            #print("nbins: {}.".format(nbins))
             tmp   = pd.qcut(data, q=nbins, duplicates='drop')
             Pred  = list(pd.Series(tmp).cat.codes)
                 
         unique, count = np.unique(Pred, return_counts=True)
         code  = np.zeros(len(unique))
-        #print("Length of code: {}".format(len(code)))
+
         for i in np.arange(len(unique)):
             code[i] = - np.log2( count[i] / len(Pred) )
 
-        #print("PRED: ".format(Pred))
-        ldata = np.sum(code[Pred])            
-            
+        try: 
+            ldata = np.sum(code[Pred]) 
+        except: 
+            code = np.append(code,0) 
+            print("EXCEPTION. Length of Pred: {}. Length of Code: {}.".format(len(Pred), len(code))) 
+            ldata = np.sum(code[Pred])
+        
         return ldata
 
 
