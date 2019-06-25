@@ -1,6 +1,7 @@
 from NNNCv2 import *
 from numpy import genfromtxt
 from sklearn.datasets import load_digits, load_iris
+from keras.datasets import mnist
 import sys
 
 def main():
@@ -8,7 +9,7 @@ def main():
     if(sys.argv[1] in "digits"):
         data = load_digits()
         X = data.data
-        #X = (X - np.min(X)) / (np.max(X) - np.min(X))
+        X = (X - np.min(X)) / (np.max(X) - np.min(X))
         y = data.target
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
     elif(sys.argv[1] in "iris"):
@@ -30,13 +31,18 @@ def main():
         X = (X - np.min(X)) / (np.max(X) - np.min(X))
         y = data[:,4]
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+    elif(sys.argv[1] in "mnist"):
+        (X_train, y_train), (X_test, y_test) = mnist.load_data()
+        X_train = (X_train - np.min(X_train)) / (np.max(X_train) - np.min(X_train))
+        X_test = (X_test - np.min(X_test)) / (np.max(X_test) - np.min(X_test))
+
     else:
         sys.exit()
 
     print("X train :{}. y_Train: {}, X test: {}, y_test: {}".format(X_train.shape,y_train.shape, X_test.shape, y_test.shape))
 
     model = NescienceNeuralNetworkClassifier(verbose = True)
-    model.fit(X_train, y_train, run_until = 5)
+    model.fit(X_train, y_train, run_until = 10)
     model.get_model_scores(X_test, y_test)
 
 main()
