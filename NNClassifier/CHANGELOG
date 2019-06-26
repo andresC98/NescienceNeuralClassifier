@@ -1,0 +1,194 @@
+commit 4c036bf6c35d25dae29bdd38f519f38755a5850b
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Wed Jun 26 15:06:27 2019 +0200
+
+    Added autoplot of results after algorithm ends, and extra options for testbench.
+
+commit 7e31bcd67d315d5923b5977ca7fc356ea5c06bc8
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Wed Jun 26 12:38:12 2019 +0200
+
+    Added flattening of data for Datasets of input (n_samples, dim1, dim2)
+
+commit dac82a3405b5fa1a99a8c96f25e66f4e19b1d840
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Wed Jun 26 11:27:45 2019 +0200
+
+    Solved wrong network saved, commented line that produced bug.
+
+commit 37e0dc74fc31eb66c938b1a31b1020289621b746
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 17:12:42 2019 +0200
+
+    added new dataset to testbench (MNIST). TODO: reshape input data
+
+commit 494080bfbf3c4103626f7438fa257ddb6f6f0851
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 16:49:51 2019 +0200
+
+    Solved _codelength_continous() bug (temporal fix?). Solved bug with saved best NN.
+
+commit 89a343e33034426a3d53730ed964c6238a83e770
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 13:00:43 2019 +0200
+
+    Added new dataset use case
+
+commit b4a31c7b837180bd740054470709ad6507753937
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 13:00:16 2019 +0200
+
+    Fixed returning non-minimal nsc network, now returns NN that fits Minimum Nescience Principle
+
+commit 394e5c9dee1faf349226419fc0042d5f618b2c9f
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 09:38:05 2019 +0200
+
+    Documented rest of new functions
+
+commit cf41ee96157151930aebece6fa9d4c1d315689cf
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 09:21:13 2019 +0200
+
+    removed useless files
+
+commit 213abe9a8d58f2d093b8ba81bdfe854524712db7
+Merge: 5ec3b2c d6e1ebe
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 09:19:05 2019 +0200
+
+    Merge branch 'master' of https://gitlab.com/andresC98/NescienceNNClassifier
+
+commit 5ec3b2cab64fc785249b081eb67d09d94de7c618
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 09:18:50 2019 +0200
+
+    removed files from repo
+
+commit d6e1ebe8a7605ad4793db4fad1c8a58542708b83
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 07:16:30 2019 +0000
+
+    Delete log.txt
+
+commit b969b12cf9bda6395caf52e770f47f521f1e9af6
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Jun 25 07:15:56 2019 +0000
+
+    Delete 14-06-19 NN.txt
+
+commit 125f44e7779d62f9b1100a2df535d37bb3591798
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Jun 24 17:20:12 2019 +0200
+
+    Added testbench code
+
+commit e646f0f1a8d6c211e2177740ffa7c28cdaf2058f
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Jun 24 16:20:19 2019 +0200
+
+    TODO: Solve Multiclass labels Nescience computation
+
+commit b9da962384ef880745c7d315ed61d724af669371
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Jun 24 16:16:22 2019 +0200
+
+    added test file
+
+commit 63bd6e0fc4970bc3dbcb2205b709feb80fdf71bc
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Jun 24 12:47:50 2019 +0200
+
+    Added get_model_scores function to provide Conf.Matrix stats
+
+commit c71258a6efa8b2f463a5e6bcc7d3f2afcca4a3e1
+Merge: 9afdc15 95a3eee
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Jun 24 11:06:07 2019 +0200
+
+    Merge branch 'master' of https://github.com/andresC98/NescienceNNClassifier
+
+commit 9afdc151c8a458a68119bab658435216473ffcc6
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Jun 24 11:05:50 2019 +0200
+
+    Updated code with new Nescience Library computations
+
+commit 95a3eeee7dd879a9a6afb9544f72b1db4e6f53e0
+Author: Andres Carrillo Lopez <42779963+andresC98@users.noreply.github.com>
+Date:   Fri Jun 21 18:19:10 2019 +0200
+
+    Created using Colaboratory
+
+commit 6725027e7ea24d0ac18609fa409c1ced49c14440
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Fri Jun 21 18:12:34 2019 +0200
+
+    Added enhanced initial features, Added visualization functions
+
+commit 4862b69fc94aae5bf570e733138603a11433634b
+Merge: 485e7b3 962d0b4
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Fri Jun 21 15:47:41 2019 +0200
+
+    Merge branch 'master' of https://github.com/andresC98/NescienceNNClassifier
+
+commit 485e7b374667277584a64be11f0ec2bda0502523
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Fri Jun 21 15:45:46 2019 +0200
+
+    added something
+
+commit 962d0b4898c3ca3e6604555aef86bf0fa0f9725f
+Author: Andres Carrillo Lopez <42779963+andresC98@users.noreply.github.com>
+Date:   Fri Jun 21 13:43:08 2019 +0200
+
+    Colaboratory notebook
+
+commit 7d2c0f47c9cc7aecae1ce4de4832c518717bf077
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Thu Jun 20 16:32:55 2019 +0200
+
+    added all debug files
+
+commit 687a3faec0b3cd0e032b04ec586545a521a1f7fd
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Jun 18 12:51:23 2019 +0200
+
+    added logged results and updated
+
+commit 679ebf88a4a1f819303cf6b7b354c98ea58aaee0
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Jun 18 11:26:34 2019 +0200
+
+    updated versions. V2 now capable of logging. Stable-ish version
+
+commit 4cb7781bb7263f3697efa335168a7c9271379322
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Thu Jun 13 17:01:07 2019 +0200
+
+    added rest of files. Finished keras implementation
+
+commit d84ab05e1cf982f968ec1223dd68a389d45e2879
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Wed Jun 12 17:57:18 2019 +0200
+
+    implemented keras on NewUnit and NewLayer tests - Finished keras migration
+
+commit a7dd890d398f430d5f3022a89b7f6fe16231bddd
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Wed Jun 12 16:22:07 2019 +0200
+
+    Migrated to Keras InitialNN and AddedFeature test
+
+commit 8e22e0bed42eaa07fb93856496b6bc41b1ef3e50
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Wed Jun 12 15:22:53 2019 +0200
+
+    migrated from local machine files
+
+commit 9f91ec34a0424bc7052c6ebe7561f69e475787fd
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Wed Jun 12 15:21:29 2019 +0200
+
+    Initial commit
