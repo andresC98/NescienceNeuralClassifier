@@ -928,6 +928,6 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     """
     def vis_nescience(self,model_hist):
         fig, axes = plt.subplots(nrows=2, ncols=1)
-        model_hist.plot(x='h_l_nodes',y=['inaccuracy','surfeit','miscoding'],ax=axes[0])
+        model_hist.plot(x='h_l_nodes',y=['inaccuracy','surfeit','miscoding'],ax=axes[0],title="Nescience Evolution through NAS")
         model_hist.plot(x='h_l_nodes', y=['nescience'],ax=axes[1])
         return
