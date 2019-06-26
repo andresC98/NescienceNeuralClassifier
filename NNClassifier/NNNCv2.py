@@ -138,9 +138,13 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         # TODO: check the input parameters [DONE ?]
         if(len(X.shape) != 2 or len(y.shape) != 1):
-            print("Invalid data shape/s of {} and output of {}.\nInput Array must be of format [[x11, x12, x13, ...], ..., [xn1, xn2, ..., xnm]].\nOutput array must be of format:[y1, ..., yn]".format(X.shape, y.shape))
-            return
-            #TODO Exit program?
+            if(len(X.shape) == 3):
+                X = X.reshape(X.shape[0],X.shape[1]*X.shape[1])
+                print("New shape of X: {}".format(X.shape))
+            else:   
+                print("Invalid data shape/s of {} and output of {}.\nInput Array must be of format [[x11, x12, x13, ...], ..., [xn1, xn2, ..., xnm]].\nOutput array must be of format:[y1, ..., yn]".format(X.shape, y.shape))
+                return
+                #TODO Exit program?
 
         # TODO: test_size should be large enought, not a percentage of data
         #(validation splits will be done in each .fit automatically.)
