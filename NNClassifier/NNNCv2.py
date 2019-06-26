@@ -39,8 +39,8 @@ The following internal attributes will be used
 import math
 import numpy  as np
 import pandas as pd
-import collections
-import time , sys
+import math, collections
+import time , sys, os, logging
 from random import randint
 import matplotlib.pyplot as plt
 
@@ -52,16 +52,14 @@ import zlib
 # Scikit-learn
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import train_test_split
-
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
 
-# Keras 
+# Keras & tensorflow
+import tensorflow as tf
 from keras.layers import Input, Dense
-from keras.models import Model
-from keras.models import Sequential
-from keras import optimizers
-from keras import losses
+from keras.models import Model, Sequential, clone_model
+from keras import optimizers, losses
 from keras.utils import to_categorical
 from keras import backend as K
 
@@ -69,7 +67,6 @@ from queue import Queue
 
 queue = Queue(10)
 import os, logging
-import tensorflow as tf
 
 class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
     
@@ -159,7 +156,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
 
         self.X = np.array(X)
         #self.y = np.array(y)
-
+        
         #self.classes_  = np.unique(y)
         self.classes_, self.y = np.unique(y, return_inverse=True)
         self.n_classes = self.classes_.shape[0]
@@ -173,7 +170,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.lcdY = self._codelength_discrete(self.y)
     
         self.lcdX = np.zeros(self.X.shape[1])
-        print(self.X.shape[1])
+
         for i in np.arange(self.X.shape[1]):
             self.lcdX[i] = self._codelength_continuous(self.X[:,i])
         
@@ -184,7 +181,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.norm_mscd = 1 - np.array(self.tcc)
         self.norm_mscd = self.norm_mscd / np.sum(self.norm_mscd)
         self.msd = self.norm_mscd.copy() #for compatibility with rest of the code (check if valid)
-        print("Dataset normalized miscoding / target conditional complexity: {}".format(self.msd))
+        #print("Dataset normalized miscoding / target conditional complexity: {}".format(self.msd))
 
         if self.backward:
             self.viu = np.ones(self.X.shape[1], dtype=np.int)
@@ -368,7 +365,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             #     if(k > 0): #we already added the first hidden layer
             #         cnn.add(Dense(units, activation = 'relu'))
             
-            cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
+            #cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
             #reusing weights from previous saved network's layers.
             cnn = Sequential()
             for layer in self.nn.layers[:-1]: # just exclude last layer from copying
