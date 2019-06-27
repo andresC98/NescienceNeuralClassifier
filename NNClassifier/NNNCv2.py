@@ -351,9 +351,11 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             
             nu = self.nu.copy()
             nu.append(3)
+
             #other options (seems more fitted for images, when previous layer is big)
             #instead of 3, the new layer has the average nodes of the previous one divided by 2?
-
+            #nu.append(int(np.ceil(np.mean(nu))))
+            
             # if(randint(0, 100) > 75):
             #     nu.append(2*int(np.ceil(np.mean(nu))))
             # else:
@@ -486,61 +488,67 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             #
             # Test dropping neural connections
             #
+
             #Parting from the last saved (best-(Minimum Nescience) network structure), 
             #tests introducing a dropout layer (that removes connections between layers,
-            #removing hidden nodes in a layer with a probability p.
-            #self.nu keeps the layer sizes.
+            #removing hidden nodes in a layer with a probability p. (KERAS WAY)
+
+            #Implementation (Manual, without Keras Dropout Layer)
+
+            print("[DEBUG] Testing removing nodes...")            
             init_t = time.time() 
-            print("[DEBUG] Testing removing connections (Dropout layer)...")            
 
-            cnn = Sequential() #network has to be created from scratch, we cannot reuse weights
-            cnn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1])) #first layer after inputs
-            cnn.add(Dropout(0.5))
-            
-            for layer in np.arange(len(self.nu)-1):
-                print("Nu: {}.".format(self.nu))
-                cnn.add(Dense(units = self.nu[layer+1], activation = 'relu'))
-            cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
-            
-            sgd = optimizers.SGD(lr = self.lr, momentum = 0.90, nesterov = True) #lr increased for dropout.
-            cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
-            cnn.fit(x = msdX, y= self.y,validation_split=0.33, verbose=0,batch_size = 32, epochs = self.it)
+            for i in np.arange(len(self.nu)): #loop in each layer
+                nu = self.nu.copy()
+                if(nu[i] <= 3):
+                    continue #too few nodes in this layer.
+                nu[i] -= 1
+                print("Removing 1 node from layer #{}. Network structure testing:{}".format(i,nu))
 
-            network_comp_t = time.time() - init_t
-            print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
-            nsc = self._nescience(self.msd, self.viu, cnn, msdX)
-            
-            if(nsc == 0):
-                break
-            if nsc == self.INVALID_INACCURACY:
-                # We cannot do anything more with this dataset
-                self.nsc = nsc
-                self.nu  = nu
-                self.nn  = cnn
-                # queue.put(self.nsc)
-                # TODO: Solve this problem
-                print("Warning! Panic! Warning! Panic! ...")
-                break
-            
-            # Save data if nescience has been reduced                        
-            if (nsc - self.tol) < self.nsc: 
-                print("[DEBUG] SAVED THIS CONFIGURATION.")
-                #cnn.summary()
-                if(nsc < best_nsc):
-                    best_nsc = nsc
-                    best_config = (cnn, self.viu)
-                    # best_nn = cnn
-                self.nsc  = nsc
-                self.nn   = cnn
-                self.nu   = nu
-                decreased = True
+                cnn = Sequential()
+                cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
+                for k in np.arange(len(self.nu)-1):
+                    cnn.add(Dense(units = nu[k+1], activation='relu'))
+                cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
 
-                if self.verbose:
-                    vals, queue = self._update_vals(msdX)
-                    print("Dropped some connections. - Nescience: ", nsc)
-                    print("[DEBUG] Nescience has been reduced.")
-            else:
-                pass
+                cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
+                cnn.fit(x = msdX, y= self.y,validation_split=0.33, verbose=0,batch_size = 32, epochs = self.it)
+
+                network_comp_t = time.time() - init_t
+                print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
+                nsc = self._nescience(self.msd, self.viu, cnn, msdX)
+                
+                if(nsc == 0):
+                    break
+                if nsc == self.INVALID_INACCURACY:
+                    # We cannot do anything more with this dataset
+                    self.nsc = nsc
+                    self.nu  = nu
+                    self.nn  = cnn
+                    # queue.put(self.nsc)
+                    # TODO: Solve this problem
+                    print("Warning! Panic! Warning! Panic! ...")
+                    break
+                
+                # Save data if nescience has been reduced                        
+                if (nsc - self.tol) < self.nsc: 
+                    print("[DEBUG] SAVED THIS CONFIGURATION.")
+                    #cnn.summary()
+                    if(nsc < best_nsc):
+                        best_nsc = nsc
+                        best_config = (cnn, self.viu)
+                        # best_nn = cnn
+                    self.nsc  = nsc
+                    self.nn   = cnn
+                    self.nu   = nu
+                    decreased = True
+
+                    if self.verbose:
+                        vals, queue = self._update_vals(msdX)
+                        print("Dropped some connections. - Nescience: ", nsc)
+                        print("[DEBUG] Nescience has been reduced.")
+                else:
+                    pass
 
 
             # Update tolerance
