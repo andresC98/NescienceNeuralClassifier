@@ -57,7 +57,7 @@ from sklearn.metrics import confusion_matrix
 
 # Keras & tensorflow
 import tensorflow as tf
-from keras.layers import Input, Dense
+from keras.layers import Input, Dense, Dropout
 from keras.models import Model, Sequential, clone_model
 from keras import optimizers, losses
 from keras.utils import to_categorical
@@ -116,7 +116,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         self.n_classes = None
 
         self.tol   = 0.05 #originally at 0.05
-        self.decay = 0.1 #originally at 0.1
+        self.decay = 0.05 #originally at 0.1
 
         self.history = None #Records history of Stats for each algorithm' saved NN
         self.model_hist = None #dataframe with history
@@ -214,36 +214,36 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             else:            
                 self.viu[np.where(msd == np.min(msd))] = 1
 
+
+        msdX = self.X[:,np.where(self.viu)[0]]
+        self.y = to_categorical(self.y) #to use with categorical cross entropy
+        #self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
+        print("Input dimension: {}".format(msdX.shape[1]))
+
+        #optimizer(s) setup (only required once)
+        
+        #adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+        sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
+        
         # Create the initial neural network
         #  - two features - UPDATED WITH sqrt N total features
         #  - one hidden layer
         #  - three units
         
-        msdX = self.X[:,np.where(self.viu)[0]]
-        print("Input dimension: {}".format(msdX.shape[1]))
         #Initial NN construction
         self.nn = Sequential()
         self.nn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1]))
         self.nn.add(Dense(units = self.n_classes, activation = 'softmax'))
-        #adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-        sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
-        #while keras being tested with multiclass classification - softmax
-        self.y = to_categorical(self.y) #to use with categorical cross entropy
-        #self.y_test = to_categorical(self.y_test) #to use with categorical cross entropy
-        
-        #NN fit
-        print("[DEBUG] Fitting initial NN.")
         self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
-        self.nn.summary()
 
         print("[DEBUG] Evaluating initial nn...")
         score = self.nn.evaluate(msdX, self.y)
         print("[DEBUG] Keras-Scores obtained: {}:{}, {}:{}.".format(self.nn.metrics_names[0],score[0],self.nn.metrics_names[1],score[1]))
+        
         self.nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
         best_nsc = self.nsc
         best_config = (self.nn, self.viu)
-        #best_nn = self.nn
 
         if self.nsc == self.INVALID_INACCURACY:
             # There is anything more we can do with this dataset
@@ -262,11 +262,10 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         decreased = True        
         iter = 0
         while (decreased):
-            print("Best nsc so far: {}.".format(best_nsc))
             iter+=1
-            print("Run #{}.".format(iter))
+            print("Best nsc so far: {}\nRun #{}.".format(best_nsc,iter))
             if(run_until != 0 and iter > run_until):
-                print("Stopped algorithm, max runs achieved. {} out of {}".format(iter,run_until))
+                print("Stopped algorithm, max runs achieved. {} out of {}".format(iter,run_until+1))
                 break
             decreased = False
 
@@ -301,8 +300,6 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 for layer in np.arange(len(self.nu)-1):
                     cnn.add(Dense(units = self.nu[layer+1], activation = 'relu'))
                 cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
-                # adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-                sgd = optimizers.SGD(lr = self.lr, momentum = 0.9, nesterov = True)
                 cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
                 cnn.fit(x = msdX, y= self.y,validation_split=0.33, verbose=0,batch_size = 32, epochs = self.it)
 
@@ -354,6 +351,9 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
             
             nu = self.nu.copy()
             nu.append(3)
+            #other options (seems more fitted for images, when previous layer is big)
+            #instead of 3, the new layer has the average nodes of the previous one divided by 2?
+
             # if(randint(0, 100) > 75):
             #     nu.append(2*int(np.ceil(np.mean(nu))))
             # else:
@@ -378,9 +378,7 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 layer.trainable = False #to reuse their weights
             cnn.add(Dense(units = nu[-1], activation = 'relu')) #adding the extra layer
             cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
-
-            sgd = optimizers.SGD(lr = self.lr, momentum = 0.9,nesterov = True)
-            # adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.1, amsgrad=False)
+           
             cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
             cnn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
             
@@ -424,7 +422,9 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 pass
                 #K.clear_session()
 
-
+            #
+            # Test adding new node to each layer
+            #
             for i in np.arange(len(self.nu)): #loops k times (in a NN with K hidden layers)
                 nu = self.nu.copy()
                 # if(randint(0, 100) > 75):
@@ -436,20 +436,20 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 msdX = self.X[:,np.where(self.viu)[0]]
                 
                 init_t = time.time() 
+
                 cnn = Sequential()
                 cnn.add(Dense(units = nu[0], activation='relu', input_dim=msdX.shape[1]))
                 for k in np.arange(len(self.nu)-1):
                     cnn.add(Dense(units = nu[k+1], activation='relu'))
                 cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
-                sgd = optimizers.SGD(lr = self.lr, momentum = 0.9, nesterov = True)
-                # adam = optimizers.Adam(lr= self.lr, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)   
+             
                 cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
                 cnn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
 
                 network_comp_t = time.time() - init_t
                 print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
-
                 nsc = self._nescience(self.msd, self.viu, cnn, msdX)
+                
                 if(nsc == 0):
                     break
                 if nsc == self.INVALID_INACCURACY:
@@ -482,8 +482,67 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
                 else:
                     pass
                     #K.clear_session()
+            
+            #
+            # Test dropping neural connections
+            #
+            #Parting from the last saved (best-(Minimum Nescience) network structure), 
+            #tests introducing a dropout layer (that removes connections between layers,
+            #removing hidden nodes in a layer with a probability p.
+            #self.nu keeps the layer sizes.
+            init_t = time.time() 
+            print("[DEBUG] Testing removing connections (Dropout layer)...")            
 
-        
+            cnn = Sequential() #network has to be created from scratch, we cannot reuse weights
+            cnn.add(Dense(units = self.nu[0], activation='relu', input_dim=msdX.shape[1])) #first layer after inputs
+            cnn.add(Dropout(0.5))
+            
+            for layer in np.arange(len(self.nu)-1):
+                print("Nu: {}.".format(self.nu))
+                cnn.add(Dense(units = self.nu[layer+1], activation = 'relu'))
+            cnn.add(Dense(units = self.n_classes, activation = 'softmax'))
+            
+            sgd = optimizers.SGD(lr = self.lr, momentum = 0.90, nesterov = True) #lr increased for dropout.
+            cnn.compile(loss = losses.categorical_crossentropy ,optimizer = sgd, metrics=['accuracy'])
+            cnn.fit(x = msdX, y= self.y,validation_split=0.33, verbose=0,batch_size = 32, epochs = self.it)
+
+            network_comp_t = time.time() - init_t
+            print("Took {:.2f}s. to create and fit test NN.".format(network_comp_t))
+            nsc = self._nescience(self.msd, self.viu, cnn, msdX)
+            
+            if(nsc == 0):
+                break
+            if nsc == self.INVALID_INACCURACY:
+                # We cannot do anything more with this dataset
+                self.nsc = nsc
+                self.nu  = nu
+                self.nn  = cnn
+                # queue.put(self.nsc)
+                # TODO: Solve this problem
+                print("Warning! Panic! Warning! Panic! ...")
+                break
+            
+            # Save data if nescience has been reduced                        
+            if (nsc - self.tol) < self.nsc: 
+                print("[DEBUG] SAVED THIS CONFIGURATION.")
+                #cnn.summary()
+                if(nsc < best_nsc):
+                    best_nsc = nsc
+                    best_config = (cnn, self.viu)
+                    # best_nn = cnn
+                self.nsc  = nsc
+                self.nn   = cnn
+                self.nu   = nu
+                decreased = True
+
+                if self.verbose:
+                    vals, queue = self._update_vals(msdX)
+                    print("Dropped some connections. - Nescience: ", nsc)
+                    print("[DEBUG] Nescience has been reduced.")
+            else:
+                pass
+
+
             # Update tolerance
             self.tol = self.tol * (1 - self.decay)
             print("Tolerance: " + str(self.tol))
@@ -718,6 +777,8 @@ class NescienceNeuralNetworkClassifier(BaseEstimator, ClassifierMixin):
         # Parameters [for each layer i in network...]r
 
         for i in np.arange(len(nn.layers)):
+            if(not nn.layers[i].get_weights()): #dropout layer. Skip.
+                continue #dropout "layer" has no weights.
             string = string + "    W" + str(i) + " = " + str(nn.layers[i].get_weights()[0]) + "\n"
             string = string + "    b" + str(i) + " = " + str(nn.layers[i].get_weights()[1]) + "\n"
             
