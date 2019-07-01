@@ -1,5 +1,0 @@
-<Model> ::= Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = self.X.shape[1]), <hidden_layers>,Dense(units = self.n_classes, activation = '\"softmax\"')])
-<hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
-<Dense> ::= Dense(units = <DenseUnits>, activation = '\"relu\"')
-<DenseUnits> ::= 16 | 32 | 64 | 128 | 256 | 512 
-
