@@ -24,9 +24,12 @@ from keras import optimizers, losses
 from keras.utils import to_categorical
 from keras import backend as K
 
+import tensorflow as tf
+
 from queue import Queue
 queue = Queue(10)
 
+import logging
 
 
 class NescNNclasGE(base_ff):
@@ -37,6 +40,7 @@ class NescNNclasGE(base_ff):
     INVALID_REDUNDANCY = -2    # Too small model    
     
     def __init__(self):
+        tf.get_logger().setLevel(logging.ERROR)
 
         super().__init__()
         #class attributes (placeholders, later as init attributes)
@@ -83,22 +87,19 @@ class NescNNclasGE(base_ff):
     def evaluate(self, ind, **kwargs):
 
         print(ind.phenotype)
-
         self.nn = eval(ind.phenotype)
         #print("Layers being used: ", self.nn.layers) #TODO: make print stm more verbose
 
         #Once GE has decided model, proceed to compile, test and evaluate it.
-
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
         self.nn.fit(x = self.X, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
 
         #Compute target variable to minimize.
         nsc = self._nescience(self.msd, self.viu, self.nn, self.X)
-        
-        #Verbose metrics
+
         vals = self._update_vals(self.X)
         print("Miscoding: ", vals["miscoding"], "Inaccuracy: ", vals["inaccuracy"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
-        #K.clear_session()
+
   
         return nsc #this will be the target to minimize by the GE algorithm.
 
