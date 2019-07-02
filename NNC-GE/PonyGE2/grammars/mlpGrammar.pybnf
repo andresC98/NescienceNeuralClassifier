@@ -1,6 +1,6 @@
 <code>::= <defvars>{::}<callvars>
-<defvars> ::= def vars():{:viu = <viu>{::}msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = self.n_classes, activation = '\"softmax\"')]){::}return viu, msdX, nn:}
-<callvars> ::= self.viu, msdX, self.nn = vars()
+<defvars> ::= def vars(x_phe):{:viu = <viu>{::}msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = self.n_classes, activation = '\"softmax\"')]){::}return viu, msdX, nn:}
+<callvars> ::= self.viu, msdX, self.nn = vars(xphe)
 
 <viu> ::= np.array([<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>])
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
