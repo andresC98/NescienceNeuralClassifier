@@ -89,7 +89,10 @@ class NescNNclasGE(base_ff):
         inargs = {"xphe" : self.X.copy()}
         exec(ind.phenotype,inargs) #self.viu, msdX, self.nn initialized here
         print(inargs)
-        print("Variables in use: {}.".format(viu))
+        self.viu = inargs['viu']
+        self.nn = inargs['nn']
+        msdX = inargs['msdX']
+        print("Variables in use: {}.".format(self.viu))
         #print("Layers being used: ", self.nn.layers) #TODO: make print stm more verbose
         print("msdX shape: {}.".format(msdX.shape[1]))
         #Once GE has decided model, proceed to compile, test and evaluate it.
