@@ -87,10 +87,10 @@ class NescNNclasGE(base_ff):
     def evaluate(self, ind, **kwargs):
 
         print(ind.phenotype)
-        self.nn, self.viu = eval(ind.phenotype)
+        eval(ind.phenotype) #self.viu, msdX, self.nn initialized here
         print("Variables in use: {}.".format(self.viu))
         #print("Layers being used: ", self.nn.layers) #TODO: make print stm more verbose
-        msdX = self.X[:,np.where(self.viu)[0]]
+        print("msdX shape: {}.".format(msdX.shape[1]))
         #Once GE has decided model, proceed to compile, test and evaluate it.
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
         self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
