@@ -87,7 +87,7 @@ class NescNNclasGE(base_ff):
     def evaluate(self, ind, **kwargs):
 
         print(ind.phenotype)
-        eval(ind.phenotype) #self.viu, msdX, self.nn initialized here
+        exec(ind.phenotype) #self.viu, msdX, self.nn initialized here
         print("Variables in use: {}.".format(self.viu))
         #print("Layers being used: ", self.nn.layers) #TODO: make print stm more verbose
         print("msdX shape: {}.".format(msdX.shape[1]))
