@@ -85,8 +85,6 @@ class NescNNclasGE(base_ff):
         self.nn = None #Model (that will be tested, etc)
 
     def evaluate(self, ind, **kwargs):
-        self.viu = np.array([1,0,1,1,1,0])
-        print(self.viu)
         print(ind.phenotype)
         exec(ind.phenotype) #self.viu, msdX, self.nn initialized here
         print("Variables in use: {}.".format(self.viu))
