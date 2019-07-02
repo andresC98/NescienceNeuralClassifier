@@ -44,7 +44,6 @@ class NescNNclasGE(base_ff):
 
         super().__init__()
         #class attributes (placeholders, later as init attributes)
-        self.nu = [3]   # Start with one hidden layer with three units
         self.it         = 25
         self.lr         = 0.01
         self.method     = "Harmonic"
@@ -222,7 +221,7 @@ class NescNNclasGE(base_ff):
         vals["inaccuracy"]  = self._inaccuracy(self.nn, msdX)
         vals["score"]       = self._score(self.nn, self.viu)
         vals["layer_sizes"] = [np.sum(self.viu)]
-        vals["layer_sizes"] = vals["layer_sizes"] + self.nu
+        vals["layer_sizes"] = vals["layer_sizes"]
         vals["layer_sizes"].append(self.n_classes) #fixed for multiclass 
 
         return vals
@@ -281,19 +280,6 @@ class NescNNclasGE(base_ff):
         string = string + "    return predictions\n"
 
         return string
-
-    def _update_vals(self, msdX):
-        vals = dict()
-        vals["nescience"]   = self._nescience(self.msd, self.viu, self.nn, msdX)
-        vals["miscoding"]   = self._miscoding(self.msd, self.viu)
-        vals["surfeit"]     = self._redundancy(self.nn)
-        vals["inaccuracy"]  = self._inaccuracy(self.nn, msdX)
-        vals["score"]       = self._score(self.nn, self.viu)
-        vals["layer_sizes"] = [np.sum(self.viu)]
-        vals["layer_sizes"] = vals["layer_sizes"] + self.nu
-        vals["layer_sizes"].append(self.n_classes) #fixed for multiclass 
-
-        return vals
 
     """"
     Compute the length of a discrete variable given a minimal length code
