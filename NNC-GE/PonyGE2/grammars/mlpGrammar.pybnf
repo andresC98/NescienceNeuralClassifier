@@ -1,4 +1,7 @@
-<code> ::= "self.viu = "<viu>"{::}msdX = self.X[:,np.where(self.viu)[0]]{::}self.nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = self.n_classes, activation = '\"softmax\"')])"
+<code>::= <defvars>{::}<callvars>
+<defvars> ::= def vars(self):{:viu = <viu>{::}msdX = self.X[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = self.n_classes, activation = '\"softmax\"')]){::}return viu, msdX, nn:}
+<callvars> ::= self.viu, msdX, self.nn = vars()
+
 <viu> ::= np.array([<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>])
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
 <x> ::= 0 | 1
