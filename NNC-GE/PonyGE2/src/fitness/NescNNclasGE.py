@@ -79,25 +79,26 @@ class NescNNclasGE(base_ff):
         self.norm_mscd = norm_mscd / np.sum(norm_mscd)
         self.msd = self.norm_mscd.copy() 
 
-        self.viu = np.ones(self.X.shape[1], dtype=np.int) #all variables in use
-
+        #self.viu = np.ones(self.X.shape[1], dtype=np.int) #all variables in use
+        self.viu = None
         self.y = to_categorical(self.y) 
         self.nn = None #Model (that will be tested, etc)
 
     def evaluate(self, ind, **kwargs):
 
         print(ind.phenotype)
-        self.nn = eval(ind.phenotype)
+        self.nn, self.viu = eval(ind.phenotype)
+        print("Variables in use: {}.".format(self.viu))
         #print("Layers being used: ", self.nn.layers) #TODO: make print stm more verbose
-
+        msdX = self.X[:,np.where(self.viu)[0]]
         #Once GE has decided model, proceed to compile, test and evaluate it.
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
-        self.nn.fit(x = self.X, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
+        self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
 
         #Compute target variable to minimize.
-        nsc = self._nescience(self.msd, self.viu, self.nn, self.X)
+        nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
 
-        vals = self._update_vals(self.X)
+        vals = self._update_vals(msdX)
         print("Miscoding: ", vals["miscoding"], "Inaccuracy: ", vals["inaccuracy"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
 
   
