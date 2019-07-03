@@ -2,7 +2,7 @@
 <defvars> ::= def vars(x_phe):{:viu = <viu>{::}msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = 10, activation = '\"softmax\"')]){::}return viu, msdX, nn:}
 <callvars> ::=viu, msdX, nn = vars(xphe)
 
-<viu> ::= <viu> ::= np.array([<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>])
+<viu> ::= np.array([<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>])
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
 <x> ::= 0 | 1
 <Dense> ::= Dense(units = <DenseUnits>, activation = '\"relu\"')
