@@ -87,6 +87,7 @@ class NescNNclasGE(base_ff):
         #print(ind.phenotype)
         inargs = {"xphe" : self.X.copy()}
         exec(ind.phenotype,inargs) #self.viu, msdX, self.nn initialized here
+        #Obtain generated output from exec dictionary
         self.viu = inargs['viu']
         self.nn = inargs['nn']
         msdX = inargs['msdX']
@@ -96,7 +97,7 @@ class NescNNclasGE(base_ff):
         #Once GE has decided model, proceed to compile, test and evaluate it.
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
         self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
-
+                
         #Compute target variable to minimize.
         nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
 
