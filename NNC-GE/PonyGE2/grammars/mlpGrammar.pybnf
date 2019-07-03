@@ -4,6 +4,6 @@
 
 <viu> ::= np.array([<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>])
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
-<x> ::= 0 | 1
+<x> ::= 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1
 <Dense> ::= Dense(units = <DenseUnits>, activation = '\"relu\"')
 <DenseUnits> ::= 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 
