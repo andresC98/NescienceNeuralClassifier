@@ -77,7 +77,6 @@ class NescNNclasGE(base_ff):
         norm_mscd = 1 - np.array(self.tcc)
         self.norm_mscd = norm_mscd / np.sum(norm_mscd)
         self.msd = self.norm_mscd.copy() 
-
         #self.viu = np.ones(self.X.shape[1], dtype=np.int) #all variables in use
         self.viu = None
         self.y = to_categorical(self.y) 
