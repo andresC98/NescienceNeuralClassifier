@@ -1,9 +1,11 @@
 <code>::= {::}import numpy as np{::}from keras.models import Sequential{::}from keras.layers import Dense{::}<defvars>{::}<callvars>
-<defvars> ::= def vars(x_phe):{:viu = <viu>{::}msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = 10, activation = '\"softmax\"')]){::}return viu, msdX, nn:}
-<callvars> ::=viu, msdX, nn = vars(xphe)
+<defvars> ::= def vars(x_phe):{:viu = <viu>{::}msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation=<act_funct>,input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = 10, activation = '\"softmax\"')]){::}opt = <optimizer>{::}return viu, msdX, nn, opt:}
+<callvars> ::=viu, msdX, nn, opt = vars(xphe)
 
 <viu> ::= np.array([<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>,<x>])
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
-<x> ::= 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 
-<Dense> ::= Dense(units = <DenseUnits>, activation = '\"relu\"')
+<x> ::=  0 | 0 | 0 | 0  | 0 | 1 | 1 | 1 | 1 | 1 
+<Dense> ::= Dense(units = <DenseUnits>, activation = <act_funct>)
 <DenseUnits> ::= 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 
+<act_funct> ::= '\"relu\"' | '\"sigmoid\"' | '\"tanh\"'
+<optimizer> ::= '\"sgd\"' |'\"adam\"'
