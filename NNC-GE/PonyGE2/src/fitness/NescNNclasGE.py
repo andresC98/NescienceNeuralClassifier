@@ -91,7 +91,7 @@ class NescNNclasGE(base_ff):
         self.nn = inargs['nn']
         msdX = inargs['msdX']
         self.optimizer = self._create_optimizer(inargs['opt'])
-        #print("Variables in use: {}.".format(self.viu))
+        print("Variables in use: {}.".format(self.viu))
         print("msdX shape: {}. Using {} optimizer.".format(msdX.shape[1], inargs['opt']))
         #Once GE has decided model, proceed to compile, test and evaluate it.
         self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])

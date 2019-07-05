@@ -2,7 +2,8 @@
 <defvars> ::= def vars(x_phe):{:viu = <viu>{::}msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation=<act_funct>,input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = 10, activation = '\"softmax\"')]){::}opt = <optimizer>{::}return viu, msdX, nn, opt:}
 <callvars> ::=viu, msdX, nn, opt = vars(xphe)
 
-<viu> ::= np.array(<att1>|<att2>|<att3>|<att4>)
+<viu> ::= np.array(<x>)
+<x> ::= <att1>|<att2>|<att3>|<att4>
 <att1> ::= [<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>,<x1>]
 <att2> ::= [<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>,<x2>]
 <att3> ::= [<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>,<x3>]
