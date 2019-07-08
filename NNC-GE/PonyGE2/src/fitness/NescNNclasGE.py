@@ -161,7 +161,7 @@ class NescNNclasGE(base_ff):
     
     def _miscoding(self, msd, viu):
         miscoding = np.dot(viu, self.norm_mscd)
-        #miscoding = 1 - miscoding
+        miscoding = 1 - miscoding
 
         return miscoding
 
@@ -254,8 +254,8 @@ class NescNNclasGE(base_ff):
     def _score(self, nn, viu):
 
         x = self.X[:,np.where(viu)[0]]
-        score = self.nn.evaluate(x, self.y)[1]
-        print("[DEBUG] NN Evaluated Accuracy = {}.".format(score))
+        score = self.nn.evaluate(x, self.y, verbose=0)[1]
+        #print("[DEBUG] NN Evaluated Accuracy = {}.".format(score))
         return score
 
     def _nn2str(self, nn):
