@@ -85,23 +85,29 @@ class NescNNclasGE(base_ff):
     def evaluate(self, ind, **kwargs):
         #print(ind.phenotype)
         inargs = {"xphe" : self.X.copy()}
-        exec(ind.phenotype,inargs) #self.viu, msdX, self.nn initialized here
-        #Obtain generated output from exec dictionary
-        self.viu = inargs['viu']
-        self.nn = inargs['nn']
-        msdX = inargs['msdX']
-        self.optimizer = self._create_optimizer(inargs['opt'])
-        #print("Variables in use: {}.".format(self.viu))
-        print("Variables in use:: {}. Using {} optimizer.".format(msdX.shape[1], inargs['opt']))
-        #Once GE has decided model, proceed to compile, test and evaluate it.
-        self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
-        self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
-                
-        #Compute target variable to minimize.
-        nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
+        #inside try-except to avoid possible invalid networks being executed
+        try:
+            exec(ind.phenotype,inargs) #self.viu, msdX, self.nn initialized here
+            #Obtain generated output from exec dictionary
+            self.viu = inargs['viu']
+            self.nn = inargs['nn']
+            msdX = inargs['msdX']
+            self.optimizer = self._create_optimizer(inargs['opt'])
+            #print("Variables in use: {}.".format(self.viu))
+            print("Variables in use:: {}. Using {} optimizer.".format(msdX.shape[1], inargs['opt']))
+            #Once GE has decided model, proceed to compile, test and evaluate it.
+            self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
+            self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
+                    
+            #Compute target variable to minimize.
+            nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
+            
+            vals = self._update_vals(msdX)
+            print("Miscoding: ", vals["miscoding"], "Inaccuracy: ", vals["inaccuracy"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
+        except:
+            nsc = 0.99 #invalid network has high nsc (very bad)
 
-        vals = self._update_vals(msdX)
-        print("Miscoding: ", vals["miscoding"], "Inaccuracy: ", vals["inaccuracy"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
+       
 
   
         return nsc #this will be the target to minimize by the GE algorithm.
