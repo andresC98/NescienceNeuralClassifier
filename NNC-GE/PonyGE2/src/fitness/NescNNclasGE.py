@@ -60,14 +60,12 @@ class NescNNclasGE(base_ff):
         
         self.classes_, self.y = np.unique(y, return_inverse=True)
         self.n_classes = self.classes_.shape[0]
-        #right now I wont be using testing split, so is very small
+        #right now I wont be using testing split (it is automatically used by keras), so here is very small
         self.X, self.X_test, self.y, self.y_test = train_test_split(X, y, test_size=0.1)
-
         self.X = np.array(self.X)
 
         self.X_test = np.array(self.X_test)
         self.nsc  = None
-        #Updated Nescience library variables
         self.lcdY = self._codelength_discrete(self.y)
         self.lcdX = np.zeros(self.X.shape[1])
         for i in np.arange(self.X.shape[1]):
@@ -76,34 +74,55 @@ class NescNNclasGE(base_ff):
         self.tcc = self._tcc()
         norm_mscd = 1 - np.array(self.tcc)
         self.norm_mscd = norm_mscd / np.sum(norm_mscd)
-        self.msd = self.norm_mscd.copy() 
-        #self.viu = np.ones(self.X.shape[1], dtype=np.int) #all variables in use
-        self.viu = None
+        msd = self.norm_mscd.copy() 
+
+        print("Computing enhanced miscoding of dataset...")
+        self.viu = np.zeros(self.X.shape[1],dtype=np.int)
+        optimal_viu = np.zeros(self.X.shape[1],dtype=np.int)
+
+        msd_list = []
+        lowest_mscd = 99.0
+
+        for i  in np.arange(self.X.shape[1]):
+            
+            msd[np.where(self.viu)] = 0
+            self.viu[np.where(msd == np.max(msd))] = 1
+            enhanced_mscd = self._enhanced_miscoding(self.viu)
+            msd_list.append(enhanced_mscd)
+            if(enhanced_mscd < lowest_mscd):
+                lowest_mscd = enhanced_mscd
+                optimal_viu = self.viu.copy()
+
+        print("Done!")
+        self.miscoding = np.array(msd_list)
+        print("Optimal numbers of attributes to use: ",np.argmin(self.miscoding))
+        self.viu = optimal_viu.copy()
+        print("Variables in use: {}.".format(self.viu))
+
         self.y = to_categorical(self.y) 
         self.nn = None #Model (that will be tested, etc)
 
     def evaluate(self, ind, **kwargs):
         #print(ind.phenotype)
-        inargs = {"xphe" : self.X.copy()}
+        inargs = {"xphe" : self.X.copy(), "viu" : self.viu}
         #inside try-except to avoid possible invalid networks being executed
         try:
             exec(ind.phenotype,inargs) #self.viu, msdX, self.nn initialized here
             #Obtain generated output from exec dictionary
-            self.viu = inargs['viu']
             self.nn = inargs['nn']
             msdX = inargs['msdX']
+            self.msdX = msdX
             self.optimizer = self._create_optimizer(inargs['opt'])
             #print("Variables in use: {}.".format(self.viu))
-            print("Variables in use:: {}. Using {} optimizer.".format(msdX.shape[1], inargs['opt']))
+            print("Variables in use:: {}.".format(msdX.shape[1]))
             #Once GE has decided model, proceed to compile, test and evaluate it.
             self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
             self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
-                    
+
             #Compute target variable to minimize.
-            nsc = self._nescience(self.msd, self.viu, self.nn, msdX)
-            
+            nsc = self._nescience(self.viu, self.nn, msdX)
             vals = self._update_vals(msdX)
-            print("Miscoding: ", vals["miscoding"], "Inaccuracy: ", vals["inaccuracy"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
+            print("Inaccuracy: ", vals["inaccuracy"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
         except:
             nsc = 0.99 #invalid network has high nsc (very bad)
 
@@ -118,12 +137,12 @@ class NescNNclasGE(base_ff):
         if "adam" in opt:
             return optimizers.adam()
 
-    def _nescience(self, msd, viu, nn, X):
+    def _nescience(self, viu, nn, X):
 
-        miscoding  = self._miscoding(msd, viu)
+        #miscoding  = self.enhanced_miscoding(viu)
+
         redundancy = self._redundancy(nn)
         inaccuracy = self._inaccuracy(nn, X)
-
         if inaccuracy == self.INVALID_INACCURACY:
             # The inaccuracy is too small, there is anything
             # we can do with this dataset
@@ -155,15 +174,22 @@ class NescNNclasGE(base_ff):
             if inaccuracy == 0:
                 # Avoid dividing by zero
                 inaccuracy = np.finfo(np.float32).tiny 
-            nescience = 3 / ( (1/miscoding) + (1/inaccuracy) + (1/redundancy))            
-    
+            nescience = 2 / ( (1/inaccuracy) + (1/redundancy))
+            #nescience = 3 / ( (1/miscoding) + (1/inaccuracy) + (1/redundancy))            
+
         return nescience
     
-    def _miscoding(self, msd, viu):
-        miscoding = np.dot(viu, self.norm_mscd)
+    def _enhanced_miscoding(self, att_in_use):
+        tcc  = self.norm_mscd
+        ctcc = self._tcc()
+        ctcc = ctcc / np.sum(ctcc)
+        diff = tcc - ctcc
+
+        miscoding = np.dot(att_in_use, diff)
         miscoding = 1 - miscoding
 
         return miscoding
+
 
     def _redundancy(self, nn):
     
@@ -226,8 +252,8 @@ class NescNNclasGE(base_ff):
     def _update_vals(self, msdX):
 
         vals = dict()
-        vals["nescience"]   = self._nescience(self.msd, self.viu, self.nn, msdX)
-        vals["miscoding"]   = self._miscoding(self.msd, self.viu)
+        vals["nescience"]   = self._nescience(self.viu, self.nn, msdX)
+        #vals["miscoding"]   = self.enhanced_miscoding(self.viu)
         vals["surfeit"]     = self._redundancy(self.nn)
         vals["inaccuracy"]  = self._inaccuracy(self.nn, msdX)
         vals["score"]       = self._score(self.nn, self.viu)
