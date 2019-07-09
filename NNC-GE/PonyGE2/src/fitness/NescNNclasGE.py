@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 # Compression algorithms
 import bz2, lzma, zlib
-
+from tqdm import tqdm
 # Scikit-learn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -40,8 +40,9 @@ class NescNNclasGE(base_ff):
     INVALID_REDUNDANCY = -2    # Too small model    
     
     def __init__(self):
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         tf.get_logger().setLevel(logging.ERROR)
-
+        tf.logging.set_verbosity(tf.logging.ERROR)
         super().__init__()
         #class attributes (placeholders, later as init attributes)
         self.it         = 25
@@ -83,7 +84,7 @@ class NescNNclasGE(base_ff):
         msd_list = []
         lowest_mscd = 99.0
 
-        for i  in np.arange(self.X.shape[1]):
+        for i  in tqdm(np.arange(self.X.shape[1])):
             
             msd[np.where(self.viu)] = 0
             self.viu[np.where(msd == np.max(msd))] = 1
@@ -93,9 +94,8 @@ class NescNNclasGE(base_ff):
                 lowest_mscd = enhanced_mscd
                 optimal_viu = self.viu.copy()
 
-        print("Done!")
         self.miscoding = np.array(msd_list)
-        print("Optimal numbers of attributes to use: ",np.argmin(self.miscoding))
+        print("Optimal numbers of attributes to use: ",np.argmin(self.miscoding)+1)
         self.viu = optimal_viu.copy()
         print("Variables in use: {}.".format(self.viu))
 
@@ -103,7 +103,6 @@ class NescNNclasGE(base_ff):
         self.nn = None #Model (that will be tested, etc)
 
     def evaluate(self, ind, **kwargs):
-        #print(ind.phenotype)
         inargs = {"xphe" : self.X.copy(), "viu" : self.viu}
         #inside try-except to avoid possible invalid networks being executed
         try:
@@ -113,8 +112,7 @@ class NescNNclasGE(base_ff):
             msdX = inargs['msdX']
             self.msdX = msdX
             self.optimizer = self._create_optimizer(inargs['opt'])
-            #print("Variables in use: {}.".format(self.viu))
-            print("Variables in use:: {}.".format(msdX.shape[1]))
+
             #Once GE has decided model, proceed to compile, test and evaluate it.
             self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
             self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
