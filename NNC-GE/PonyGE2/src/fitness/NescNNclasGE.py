@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 
 # Compression algorithms
 import bz2, lzma, zlib
-from tqdm import tqdm
 # Scikit-learn
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -84,7 +83,7 @@ class NescNNclasGE(base_ff):
         msd_list = []
         lowest_mscd = 99.0
 
-        for i  in tqdm(np.arange(self.X.shape[1])):
+        for i  in np.arange(self.X.shape[1]):
             
             msd[np.where(self.viu)] = 0
             self.viu[np.where(msd == np.max(msd))] = 1
@@ -95,7 +94,7 @@ class NescNNclasGE(base_ff):
                 optimal_viu = self.viu.copy()
 
         self.miscoding = np.array(msd_list)
-        print("Optimal numbers of attributes to use: ",np.argmin(self.miscoding)+1)
+        print("Optimal number of attributes to use: ",np.argmin(self.miscoding)+1)
         self.viu = optimal_viu.copy()
         print("Variables in use: {}.".format(self.viu))
 
@@ -179,7 +178,7 @@ class NescNNclasGE(base_ff):
     
     def _enhanced_miscoding(self, att_in_use):
         tcc  = self.norm_mscd
-        ctcc = self._tcc()
+        ctcc = self.tcc
         ctcc = ctcc / np.sum(ctcc)
         diff = tcc - ctcc
 
