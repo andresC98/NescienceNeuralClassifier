@@ -105,7 +105,7 @@ class NescNNclasGE(base_ff):
         inargs = {"xphe" : self.X.copy(), "viu" : self.viu}
         #inside try-except to avoid possible invalid networks being executed
         try:
-            exec(ind.phenotype,inargs) #self.viu, msdX, self.nn initialized here
+            exec(ind.phenotype,inargs) #msdX, self.nn initialized here
             #Obtain generated output from exec dictionary
             self.nn = inargs['nn']
             msdX = inargs['msdX']
@@ -123,9 +123,6 @@ class NescNNclasGE(base_ff):
         except:
             nsc = 0.99 #invalid network has high nsc (very bad)
 
-       
-
-  
         return nsc #this will be the target to minimize by the GE algorithm.
 
     def _create_optimizer(self, opt):

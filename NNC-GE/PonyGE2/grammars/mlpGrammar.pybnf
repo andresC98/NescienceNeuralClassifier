@@ -1,9 +1,9 @@
 <code>::= {::}import numpy as np{::}from keras.models import Sequential{::}from keras.layers import Dense{::}<defvars>{::}<callvars>
-<defvars> ::= def vars(x_phe, viu):{:msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation=<act_funct>,input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = 10, activation = '\"softmax\"')]){::}opt = <optimizer>{::}return msdX, nn, opt:}
+<defvars> ::= def vars(x_phe, viu):{:msdX = x_phe[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = 10, activation = '\"softmax\"')]){::}opt = <optimizer>{::}return msdX, nn, opt:}
 <callvars> ::= msdX, nn, opt = vars(xphe, viu)
 
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
-<Dense> ::= Dense(units = <DenseUnits>, activation = <act_funct>)
+<Dense> ::= Dense(units = <DenseUnits>, activation = '\"relu\"')
 <DenseUnits> ::= 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 
 <act_funct> ::= '\"relu\"' | '\"sigmoid\"' | '\"tanh\"'
 <optimizer> ::= '\"sgd\"' |'\"adam\"'
