@@ -108,7 +108,7 @@ class NescNNclasGE(base_ff):
                 optimal_viu = self.viu.copy()
 
         self.miscoding = np.array(msd_list)
-        print("Optimal number of attributes to use: ",np.argmin(self.miscoding)+1)
+        print("Computed optimal attributes in use. Using {} attributes.",np.argmin(self.miscoding)+1)
         self.viu = optimal_viu.copy()
         print("Variables in use: {}.".format(self.viu))
 
@@ -299,8 +299,6 @@ class NescNNclasGE(base_ff):
         # Header
         string = "def NN(X):\n"
             
-        # Parameters [for each layer i in network...]r
-
         for i in np.arange(len(nn.layers)):
             if(not nn.layers[i].get_weights()): #dropout layer. Skip.
                 continue #dropout "layer" has no weights.
