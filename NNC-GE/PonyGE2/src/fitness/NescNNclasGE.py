@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import bz2, lzma, zlib
 # Scikit-learn
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
+from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_digits
 # Keras & tensorflow
 import keras
@@ -39,11 +39,14 @@ class NescNNclasGE(base_ff):
     INVALID_REDUNDANCY = -2    # Too small model    
     
     def __init__(self):
+
+        #Disabling (annoying) TF Info logs
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         tf.get_logger().setLevel(logging.ERROR)
         tf.logging.set_verbosity(tf.logging.ERROR)
         super().__init__()
-        #class attributes (placeholders, later as init attributes)
+
+        #class (fixed) attributes
         self.it         = 25
         self.lr         = 0.01
         self.method     = "Harmonic"
@@ -53,23 +56,34 @@ class NescNNclasGE(base_ff):
         self.optimizer  = None
 
         
+        #Data preprocessing
+        scaler = StandardScaler()
+
         data = load_digits()
         X = data.data
-        X = (X - np.min(X)) / (np.max(X) - np.min(X))
         y = data.target
         
         self.classes_, self.y = np.unique(y, return_inverse=True)
         self.n_classes = self.classes_.shape[0]
-        #right now I wont be using testing split (it is automatically used by keras), so here is very small
-        self.X, self.X_test, self.y, self.y_test = train_test_split(X, y, test_size=0.1)
-        self.X = np.array(self.X)
+        self.X, self.X_test, self.y, self.y_test  = train_test_split(X,self.y, test_size = 0.2)
 
+        self.X = scaler.fit_transform(self.X)
+        self.X_test = scaler.transform(self.X_test)
+        self.X = np.array(self.X)
         self.X_test = np.array(self.X_test)
-        self.nsc  = None
+
+
+        #Initial miscoding computation
+
         self.lcdY = self._codelength_discrete(self.y)
         self.lcdX = np.zeros(self.X.shape[1])
         for i in np.arange(self.X.shape[1]):
             self.lcdX[i] = self._codelength_continuous(self.X[:,i])
+
+        self.lcdY_test = self._codelength_discrete(self.y_test)
+        self.lcdX_test = np.zeros(self.X_test.shape[1])
+        for i in np.arange(self.X_test.shape[1]):
+            self.lcdX_test[i] = self._codelength_continuous(self.X_test[:,i])
 
         self.tcc = self._tcc()
         norm_mscd = 1 - np.array(self.tcc)
@@ -98,14 +112,16 @@ class NescNNclasGE(base_ff):
         self.viu = optimal_viu.copy()
         print("Variables in use: {}.".format(self.viu))
 
-        self.y = to_categorical(self.y) 
+
+        self.nsc  = None #Nescience of current individual
+        self.y = to_categorical(self.y)
+        self.y_test = to_categorical(self.y_test)  
         self.nn = None #Model (that will be tested, etc)
 
     def evaluate(self, ind, **kwargs):
         inargs = {"xphe" : self.X.copy(), "viu" : self.viu}
-        #inside try-except to avoid possible invalid networks being executed
         try:
-            exec(ind.phenotype,inargs) #msdX, self.nn initialized here
+            exec(ind.phenotype,inargs) #msdX, self.nn and opt. initialized here
             #Obtain generated output from exec dictionary
             self.nn = inargs['nn']
             msdX = inargs['msdX']
@@ -116,10 +132,11 @@ class NescNNclasGE(base_ff):
             self.nn.compile(loss = losses.categorical_crossentropy ,optimizer = self.optimizer, metrics=['accuracy'])
             self.nn.fit(x = msdX, y= self.y, validation_split=0.33,verbose=0,batch_size = 32, epochs = self.it)
 
-            #Compute target variable to minimize.
-            nsc = self._nescience(self.viu, self.nn, msdX)
-            vals = self._update_vals(msdX)
-            print("Inaccuracy: ", vals["inaccuracy"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
+            #Nescience computations should be done using Test data.
+            msdX_test = self.X_test[:,np.where(self.viu)[0]]
+            nsc = self._nescience(self.viu, self.nn, msdX_test)
+            vals = self._update_vals(msdX_test)
+            print("Inaccuracy: ", vals["inaccuracy"],"Score: ",vals["score"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
         except:
             nsc = 0.99 #invalid network has high nsc (very bad)
 
@@ -216,9 +233,9 @@ class NescNNclasGE(base_ff):
 
         errors = list()
         for i in np.arange(X.shape[0]):
-            if(pred[i] != np.argmax(self.y, axis=1)[i]):
+            if(pred[i] != np.argmax(self.y_test, axis=1)[i]):
                 new_error = list(X[i])
-                new_error.append(np.argmax(self.y, axis=1)[i])
+                new_error.append(np.argmax(self.y_test, axis=1)[i])
                 errors.append(new_error)
         
         errors = np.array(errors)
@@ -230,14 +247,13 @@ class NescNNclasGE(base_ff):
         ldm = ldm + self._codelength_discrete(errors[:,-1].astype(np.int))
         # Compute the compressed length of data in use
             
-        for i in np.arange(self.X.shape[1]):
-
+        
+        for i in np.arange(self.X_test.shape[1]):
             if self.viu[i] == 0:
                 continue
-
-            ldata = ldata + self.lcdX[i]
+            ldata = ldata + self.lcdX_test[i]
         
-        ldata = ldata + self.lcdY
+        ldata = ldata + self.lcdY_test
             
         inaccuracy = ldm / ldata
         
@@ -268,15 +284,13 @@ class NescNNclasGE(base_ff):
         # TODO: Check that we have a model trained
         predictions = nn.predict(X) # Softmax output
         predictions = np.argmax(predictions, axis=1)
-        #print("[DEBUG] Predictions after argmax interpretation: {}".format(predictions))
         return predictions
 
     def _score(self, nn, viu):
 
-        x = self.X[:,np.where(viu)[0]]
-        score = self.nn.evaluate(x, self.y, verbose=0)[1]
-        #print("[DEBUG] NN Evaluated Accuracy = {}.".format(score))
-        return score
+        x = self.X_test[:,np.where(viu)[0]]
+        score = self.nn.evaluate(x, self.y_test, verbose=0)
+        return score[1]
 
     def _nn2str(self, nn):
         # TODO: Review 
