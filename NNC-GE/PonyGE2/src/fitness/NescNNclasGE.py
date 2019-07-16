@@ -1,11 +1,11 @@
 #Genetic Algorithm Library (PonyGE2)
 from fitness.base_ff_classes.base_ff import base_ff
-
+import stats
 #Math, Data Science and System libraries
 import numpy  as np
 import pandas as pd
 import math, collections
-import time , sys, os
+import time , sys, os, threading
 from random import randint
 import matplotlib.pyplot as plt
 
@@ -28,8 +28,8 @@ import tensorflow as tf
 from queue import Queue
 queue = Queue(10)
 
-import logging
-
+import logging, csv, traceback
+from datetime import datetime
 
 class NescNNclasGE(base_ff):
     maximise = False #we want to minimize our objective: Nescience value.
@@ -54,8 +54,9 @@ class NescNNclasGE(base_ff):
         self.backward   = False
         self.verbose    = True
         self.optimizer  = None
+    
+        self.nsc_csv_name = datetime.now().strftime('%H-%M-%S.csv')
 
-        
         #Data preprocessing
         scaler = StandardScaler()
 
@@ -108,7 +109,7 @@ class NescNNclasGE(base_ff):
                 optimal_viu = self.viu.copy()
 
         self.miscoding = np.array(msd_list)
-        print("Computed optimal attributes in use. Using {} attributes.",np.argmin(self.miscoding)+1)
+        print("Computed optimal attributes in use. Using {} attributes.".format(np.argmin(self.miscoding)+1))
         self.viu = optimal_viu.copy()
         print("Variables in use: {}.".format(self.viu))
 
@@ -136,8 +137,17 @@ class NescNNclasGE(base_ff):
             msdX_test = self.X_test[:,np.where(self.viu)[0]]
             nsc = self._nescience(self.viu, self.nn, msdX_test)
             vals = self._update_vals(msdX_test)
-            print("Inaccuracy: ", vals["inaccuracy"],"Score: ",vals["score"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
+            
+            nsc_data = [ind.name, vals["inaccuracy"],vals["surfeit"], vals["nescience"]]
+            with open("./nsc_results/"+self.nsc_csv_name, 'a') as csvFile:
+                writer = csv.writer(csvFile)
+                writer.writerow(nsc_data)
+           
+            print("Ind: ",ind.name," Inaccuracy: ", vals["inaccuracy"],"Score: ",vals["score"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
+
+                
         except:
+            #traceback.print_exc()
             nsc = 0.99 #invalid network has high nsc (very bad)
 
         return nsc #this will be the target to minimize by the GE algorithm.
