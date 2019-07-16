@@ -73,7 +73,7 @@ class NescNNclasGE(base_ff):
         self.X = np.array(self.X)
         self.X_test = np.array(self.X_test)
 
-
+        self.n_vars = self.X.shape[1]
         #Initial miscoding computation
 
         self.lcdY = self._codelength_discrete(self.y)
@@ -92,38 +92,46 @@ class NescNNclasGE(base_ff):
         msd = self.norm_mscd.copy() 
 
         print("Computing enhanced miscoding of dataset...")
-        self.viu = np.zeros(self.X.shape[1],dtype=np.int)
-        optimal_viu = np.zeros(self.X.shape[1],dtype=np.int)
-
-        msd_list = []
-        lowest_mscd = 99.0
-
-        for i  in np.arange(self.X.shape[1]):
-            
-            msd[np.where(self.viu)] = 0
-            self.viu[np.where(msd == np.max(msd))] = 1
-            enhanced_mscd = self._enhanced_miscoding(self.viu)
-            msd_list.append(enhanced_mscd)
-            if(enhanced_mscd < lowest_mscd):
-                lowest_mscd = enhanced_mscd
-                optimal_viu = self.viu.copy()
-
-        self.miscoding = np.array(msd_list)
-        print("Computed optimal attributes in use. Using {} attributes.".format(np.argmin(self.miscoding)+1))
-        self.viu = optimal_viu.copy()
-        print("Variables in use: {}.".format(self.viu))
-
+        self.miscoding, self.vius = self.compute_mscd_list()
 
         self.nsc  = None #Nescience of current individual
         self.y = to_categorical(self.y)
         self.y_test = to_categorical(self.y_test)  
         self.nn = None #Model (that will be tested, etc)
 
+    def compute_mscd_list(self):
+        '''
+        Computes miscoding list and the corresponding list of vius.
+        '''
+        #Variables in use
+        viu = np.zeros(self.X.shape[1],dtype=np.int)
+        #List of viu arrays 
+        vius = []
+        msd = self.norm_mscd.copy()
+        msd_list = []
+
+        for i  in np.arange(self.X.shape[1]):
+            msd[np.where(viu)] = 0
+            viu[np.where(msd == np.max(msd))] = 1
+            vius.append(viu.copy())
+            enhanced_mscd = self._enhanced_miscoding(viu)
+            msd_list.append(enhanced_mscd)
+        
+
+        #Array containing miscoding from 1 to N attributes in use
+        miscoding = np.array(msd_list)
+
+        return miscoding, vius
+
+
+        return mscd 
+
     def evaluate(self, ind, **kwargs):
-        inargs = {"xphe" : self.X.copy(), "viu" : self.viu}
+        inargs = {"self": self}
         try:
             exec(ind.phenotype,inargs) #msdX, self.nn and opt. initialized here
             #Obtain generated output from exec dictionary
+            self.viu = inargs['viu']
             self.nn = inargs['nn']
             msdX = inargs['msdX']
             self.msdX = msdX
@@ -142,12 +150,13 @@ class NescNNclasGE(base_ff):
             with open("./nsc_results/"+self.nsc_csv_name, 'a') as csvFile:
                 writer = csv.writer(csvFile)
                 writer.writerow(nsc_data)
-           
-            print("Ind: ",ind.name," Inaccuracy: ", vals["inaccuracy"],"Score: ",vals["score"], "Redundancy: ", vals["surfeit"], "Nescience: ", vals["nescience"])
+            num_vius = np.count_nonzero(self.viu == 1)
+
+            print("[",num_vius,"VIUs] Inaccuracy: ", vals["inaccuracy"],"Score:",vals["score"],"Miscoding:",vals["miscoding"],"Redundancy:", vals["surfeit"], "Nescience:", vals["nescience"])
 
                 
         except:
-            #traceback.print_exc()
+            traceback.print_exc()
             nsc = 0.99 #invalid network has high nsc (very bad)
 
         return nsc #this will be the target to minimize by the GE algorithm.
@@ -159,8 +168,8 @@ class NescNNclasGE(base_ff):
             return optimizers.adam()
 
     def _nescience(self, viu, nn, X):
-
-        #miscoding  = self.enhanced_miscoding(viu)
+        
+        miscoding  = self._enhanced_miscoding(viu)
 
         redundancy = self._redundancy(nn)
         inaccuracy = self._inaccuracy(nn, X)
@@ -273,7 +282,7 @@ class NescNNclasGE(base_ff):
 
         vals = dict()
         vals["nescience"]   = self._nescience(self.viu, self.nn, msdX)
-        #vals["miscoding"]   = self.enhanced_miscoding(self.viu)
+        vals["miscoding"]   = self._enhanced_miscoding(self.viu)
         vals["surfeit"]     = self._redundancy(self.nn)
         vals["inaccuracy"]  = self._inaccuracy(self.nn, msdX)
         vals["score"]       = self._score(self.nn, self.viu)
