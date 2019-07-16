@@ -146,7 +146,7 @@ class NescNNclasGE(base_ff):
             nsc = self._nescience(self.viu, self.nn, msdX_test)
             vals = self._update_vals(msdX_test)
             
-            nsc_data = [ind.name, vals["inaccuracy"],vals["surfeit"], vals["nescience"]]
+            nsc_data = [vals["miscoding"], vals["inaccuracy"],vals["surfeit"], vals["nescience"]]
             with open("./nsc_results/"+self.nsc_csv_name, 'a') as csvFile:
                 writer = csv.writer(csvFile)
                 writer.writerow(nsc_data)
@@ -275,6 +275,9 @@ class NescNNclasGE(base_ff):
         ldata = ldata + self.lcdY_test
             
         inaccuracy = ldm / ldata
+        if inaccuracy == 0.0:#"fix" of weird issue
+            inaccuracy = 0.001
+            print("it happened")
         
         return inaccuracy
 
