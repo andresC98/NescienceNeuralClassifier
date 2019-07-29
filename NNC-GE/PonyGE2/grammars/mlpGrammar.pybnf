@@ -1,11 +1,11 @@
 <code>::= {::}import numpy as np{::}from keras.models import Sequential{::}from keras.layers import Dense{::}<defvars>{::}<callvars>
-<defvars> ::= def vars(self):{:viu = self.vius[<max_vius>]{::}msdX = self.X[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation='\"relu\"',input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = self.n_classes, activation = '\"softmax\"')]){::}opt = <optimizer>{::}return viu, msdX, nn, opt:}
+<defvars> ::= def vars(self):{:viu = self.vius[<max_vius>]{::}msdX = self.X[:,np.where(viu)[0]]{::}nn = Sequential([Dense(units = <DenseUnits>,activation=<act_funct>,input_dim = msdX.shape[1]), <hidden_layers>,Dense(units = self.n_classes, activation = '\"softmax\"')]){::}opt = <optimizer>{::}return viu, msdX, nn, opt:}
 <callvars> ::=viu, msdX, nn, opt = vars(self)
 
 <max_vius> ::= GE_RANGE:dataset_n_vars
 
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
-<Dense> ::= Dense(units = <DenseUnits>, activation = '\"relu\"')
+<Dense> ::= Dense(units = <DenseUnits>, activation = <act_funct>)
 <DenseUnits> ::= 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 
-<act_funct> ::= '\"relu\"' | '\"sigmoid\"' | '\"tanh\"'
-<optimizer> ::= '\"sgd\"' |'\"adam\"'
+<act_funct> ::= '\"relu\"' | '\"sigmoid\"' 
+<optimizer> ::= '\"adam\"'|'\"Adadelta\"'
