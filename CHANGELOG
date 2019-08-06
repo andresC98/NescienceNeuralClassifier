@@ -1,3 +1,101 @@
+commit 0f2b4b4a0bc0a9d494908163ac485e481097b381
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 14:27:13 2019 +0200
+
+    Added script for evaluating algorithm result
+
+commit f421259f99983cff68463d6551745e69630103f5
+Merge: 95e5a08 8ad4a5d
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 14:26:33 2019 +0200
+
+    Merge branch 'master' of https://gitlab.com/andresC98/NescienceNNClassifier
+
+commit 95e5a08923542122768880b2f42dbe061f8036f9
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 13:23:09 2019 +0200
+
+    Added NumVIUs metric to stats file for atomatic best model retrieval
+
+commit 8ad4a5ddbdfa8f2255716aaed61f82d69a3a53d2
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 10:34:36 2019 +0000
+
+    Update README.md
+
+commit 028499bb7c38afa8246baa27c9909edc0396a745
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 11:39:00 2019 +0200
+
+    Added new Dataset selection script. Working version
+
+commit b6b8ea3e6110569fd1ac94f649bc687515b90ddc
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Jul 29 08:35:28 2019 +0200
+
+    Added random undersampling option. Added full model save and  ModelCheckpoints callbacks. Improved saved analysis files.
+
+commit 16a746b7fd549b9ffa36f1c0578a390e667f9f15
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Thu Jul 18 11:17:08 2019 +0200
+
+    Added variable-size output for grammar (compatible with any dataset). Added file-generation for post-run analysis
+
+commit 8baa7c39bba03526b5c3ec6787b52e79423957f5
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jul 16 14:39:33 2019 +0200
+
+    Added inaccuracy temporal fix and miscoding to nsc stats
+
+commit 7da362f32f49c9b7cc36351d10af387d18c9ff2c
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jul 16 12:29:23 2019 +0200
+
+    Added new VIU and EnhancedMiscoding into grammar
+
+commit 17c826b2a18ce6545bff2162d1c8618b7ccc4da7
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Jul 16 09:58:59 2019 +0200
+
+    Added .csv generation with Nescience stats for individuals
+
+commit bd3d07654bb108070f2ef02c750728cd99126321
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Thu Jul 11 12:16:05 2019 +0200
+
+    Removed debug prints from output
+
+commit e2d11a65bd85c2b0f9ad38fdd8346b1a2b862c67
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Thu Jul 11 11:58:58 2019 +0200
+
+    Solved critical misuse of Training/Test information for inaccuracy evaluation
+
+commit 797e87b9040024aaa20771453b3c53af3fdd5897
+Merge: 3beecd7 32c0050
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Wed Jul 10 15:10:58 2019 +0200
+
+    Merge branch 'master' of https://gitlab.com/andresC98/NescienceNNClassifier
+
+commit 3beecd7fcfa20df75c32d1e779c28acfda728a20
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Wed Jul 10 15:10:49 2019 +0200
+
+    Simplified grammar choices for testing
+
+commit 32c00508a8b37cfce14570a3da1ebe624123a761
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Wed Jul 10 08:51:24 2019 +0000
+
+    Added README.md
+
+commit b07adb87307e575adffe7a32b994b222ebe3e953
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Wed Jul 10 10:44:09 2019 +0200
+
+    Updated CHANGELOG
+
 commit a99e26f44f5cc664a5143fd6c5fa86ac1f80616a
 Author: Andres Carrillo <acarrillolopez98@gmail.com>
 Date:   Tue Jul 9 16:34:04 2019 +0200
