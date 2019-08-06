@@ -200,7 +200,7 @@ class NescNNclasGE(base_ff):
             num_vius = np.count_nonzero(self.viu == 1)
 
             #Data storing (nescience parameters) for later analysis
-            nsc_data = [counter.value,vals["miscoding"], vals["inaccuracy"],
+            nsc_data = [counter.value,num_vius,vals["miscoding"], vals["inaccuracy"],
                         vals["surfeit"], vals["nescience"]]
             self.save_ind(nsc_data) 
 
