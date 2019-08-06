@@ -1,7 +1,6 @@
 #Genetic Algorithm Library (PonyGE2)
 from fitness.base_ff_classes.base_ff import base_ff
 
-from imblearn.under_sampling import RandomUnderSampler
 #Math, Data Science and System libraries
 import numpy  as np
 import pandas as pd
@@ -16,7 +15,6 @@ import bz2, lzma, zlib
 # Scikit-learn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import load_digits, load_iris
 
 # Keras & tensorflow
 import keras
@@ -26,17 +24,20 @@ from keras import optimizers, losses
 from keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras import backend as K
-
 import tensorflow as tf
 
+#Debugging and logging
 import logging, csv, traceback, pdb, code
 from datetime import datetime
 from multiprocessing import Value
+from tqdm import tqdm 
 
+#datasets:
+from datasets import launch_data
 counter = Value('i',0) #Shared variable between multiprocessing Pool
 
 class NescNNclasGE(base_ff):
-    global counter 
+    global counter #Contains individual ID number
     counter = Value('i',0)
     maximise = False #we want to minimize our objective: Nescience value.
     INVALID_INACCURACY = -1    #    If algorithm cannot be applied to this dataset
@@ -45,7 +46,7 @@ class NescNNclasGE(base_ff):
     
     def __init__(self):
 
-        #Disabling (annoying) TF Info logs
+        #Disabling some (annoying) TF Info logs
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         tf.get_logger().setLevel(logging.ERROR)
         tf.logging.set_verbosity(tf.logging.ERROR)
@@ -67,61 +68,40 @@ class NescNNclasGE(base_ff):
         #Data load and preprocessing
         scaler = StandardScaler()
 
-        #Imbalanced datasets [Pulsar Stars, Magic Telescope]
-        data = pd.read_csv("./datasets/pulsar_stars.csv")
-        y=data.target_class
-        X=data.drop("target_class", axis=1)
+        #Available data: load_pulsars, load_magic, load_fashionmnist, load_digitsdata, load_irisdata
+        # "reserved" data is not used in this algorithm but saved for use in the final 
+        # model evaluation outside the script. Important keeping same random_state and test_size.
+        #Note: FashionMNIST does NOT need this initial traintestsplit (already done)
+        X, y , dataset = launch_data()
 
-        # data = pd.read_csv("./datasets/magic04.data", names=["fLength", "fWidth", "fSize", "fConc","fConc1","fAsym","fM3Long","fM3Trans","fAlpha","fDist","class"])
-        # y = (data['class'] == 'h').astype(int)
-        # X = data.drop('class', 1)
-
-        #Random undersampling of the majority class for Imb. datasets
-        rus = RandomUnderSampler()
-        X, y = rus.fit_resample(X,y)
-        print("Resampled data shapes: {}, {}.".format(X.shape, y.shape))
-
-        #Balanced datasets [Digits, Iris]
-
-        # data = load_digits()
-        # X = data.data
-        # y = data.target
-
-        # data = load_iris()
-        # X = data.data
-        # X = (X - np.min(X)) / (np.max(X) - np.min(X))
-        # y = data.target
+        if "fmnist" not in dataset:
+            X, X_reserved, y, y_reserved  = train_test_split(X,y, random_state = 42,test_size = 0.33)
 
         self.classes_, self.y = np.unique(y, return_inverse=True)
         self.n_classes = self.classes_.shape[0]
 
+        #Test split is used for evaluating individual's Nescience.
         self.X, self.X_test, self.y, self.y_test  = train_test_split(X,self.y, test_size = 0.2)
         print("Input train data shape: {}. Output: {}. Number of classes: {}.".format(self.X.shape, self.y.shape, self.n_classes))
         self.X = scaler.fit_transform(self.X)
         self.X_test = scaler.transform(self.X_test)
         
-        #Storing scaling factors (mean and var)
-        (s_mean, s_var) = scaler.mean_, scaler.var_
-
-        scaling_filename = "./analysis/"+self.nsc_csv_name[:8]+"/"+"scaling_factors.txt"
-        os.makedirs(os.path.dirname(scaling_filename), exist_ok=True)
-        with open(scaling_filename, 'wb') as f:
-            pickle.dump((s_mean, s_var), f)   
+        #Storing scaling factors (mean and var) in file for later use
+        self.save_scaling(scaler)  
 
         self.X = np.array(self.X)
         self.X_test = np.array(self.X_test)
-
         self.n_vars = self.X.shape[1]
 
         #Initial miscoding computation
         self.lcdY = self._codelength_discrete(self.y)
         self.lcdX = np.zeros(self.X.shape[1])
-        for i in np.arange(self.X.shape[1]):
+        for i in tqdm(np.arange(self.X.shape[1])):
             self.lcdX[i] = self._codelength_continuous(self.X[:,i])
 
         self.lcdY_test = self._codelength_discrete(self.y_test)
         self.lcdX_test = np.zeros(self.X_test.shape[1])
-        for i in np.arange(self.X_test.shape[1]):
+        for i in tqdm(np.arange(self.X_test.shape[1])):
             self.lcdX_test[i] = self._codelength_continuous(self.X_test[:,i])
 
         self.tcc = self._tcc()
@@ -193,23 +173,24 @@ class NescNNclasGE(base_ff):
             #Obtain generated output from exec dictionary
             self.viu = inargs['viu']
             self.nn = inargs['nn']
-            msdX = inargs['msdX']
-            self.msdX = msdX
+            self.msdX = inargs['msdX']
             self.optimizer = self._create_optimizer(inargs['opt'])
 
             #Once GE has decided model, proceed to compile, test and evaluate it.
             self.nn.compile(loss=losses.categorical_crossentropy,
                             optimizer=self.optimizer, metrics=['accuracy'])
 
+            #Keras model checkpoint file creation
             fname = "./analysis/"+self.nsc_csv_name[:8]+"/networks/"+"Net"+str(counter.value)+'_fullmodel.hdf5'
             os.makedirs(os.path.dirname(fname), exist_ok=True)
 
             early_stop = EarlyStopping(monitor='val_acc',mode='max', verbose=0,patience = 10)
             cp_save = ModelCheckpoint(fname, save_best_only=True,verbose=0, monitor='val_acc', mode='max')            
     
-            self.nn.fit(x=msdX, y=self.y, validation_split = 0.33,
+            self.nn.fit(x=self.msdX, y=self.y, validation_split = 0.33,
                         verbose=0, batch_size=32, epochs=self.it, callbacks = [early_stop, cp_save])
 
+            #Restores network from best epoch
             self.nn.load_weights(filepath = fname)
 
             #Nescience computations should be done using Test data.
@@ -218,11 +199,10 @@ class NescNNclasGE(base_ff):
             vals = self._update_vals(msdX_test)
             num_vius = np.count_nonzero(self.viu == 1)
 
+            #Data storing (nescience parameters) for later analysis
             nsc_data = [counter.value,vals["miscoding"], vals["inaccuracy"],
                         vals["surfeit"], vals["nescience"]]
-
-            #saving model & extra relevant information:
-            self.save_ind(nsc_data)
+            self.save_ind(nsc_data) 
 
             print("IND#",counter.value,"[", num_vius, "VIUs] Inaccuracy:", vals["inaccuracy"], "Score:", vals["score"],
                   "Miscoding:", vals["miscoding"], "Redundancy:", vals["surfeit"], "Nescience:", vals["nescience"])
@@ -240,6 +220,17 @@ class NescNNclasGE(base_ff):
 
         return nsc #this will be the target to minimize by the GE algorithm.
 
+    def save_scaling(self, scaler):
+        (s_mean, s_var) = scaler.mean_, scaler.var_
+
+        scaling_filename = "./analysis/"+self.nsc_csv_name[:8]+"/"+"scaling_factors.txt"
+        os.makedirs(os.path.dirname(scaling_filename), exist_ok=True)
+        with open(scaling_filename, 'wb') as f:
+            pickle.dump((s_mean, s_var), f) 
+
+        return
+
+
     def _create_optimizer(self, opt):
         if "sgd" in opt:
             return optimizers.SGD()
@@ -250,21 +241,19 @@ class NescNNclasGE(base_ff):
 
     def save_ind(self, nsc_data):
         '''
-        Saves the current individual being evaluated by the algorithm in a json file and 
+        Saves the current individual (nescience stats) being evaluated by the algorithm in a json file and 
         appends a new row to the Nescience stats csv file created for the alrorithm run.
-        Also saves the network's VIU array.
         
-        The network architecture is stored so that it can be later loaded with the keras
-        function "model.from_json()" function. 
-
-        The architecture DOES NOT save the weights, only the model structure, and it is
-        needed to recompile and fit the network after loading it with the method.
+        The network architecture can also be stored so that it can be later loaded with the keras
+        function "model.from_json()" function. Note that the architecture DOES NOT save the weights, 
+        only the model structure, and it is needed to recompile and fit the network after loading it with the method.
         '''
 
         # filename = "./analysis/"+self.nsc_csv_name[:8]+"/networks/net"+ str(counter.value)+'_architecture.json'
         # os.makedirs(os.path.dirname(filename), exist_ok=True)
         # with open(filename, "w") as f:
         #     f.write(self.nn.to_json())
+
         stat_file = "./analysis/"+self.nsc_csv_name[:8]+"/"+"stats.csv"
         os.makedirs(os.path.dirname(stat_file), exist_ok=True)
         with open(stat_file, 'a') as csvFile:
@@ -421,13 +410,11 @@ class NescNNclasGE(base_ff):
 
     def _nn2str(self, nn):
         # TODO: Review 
-        # 10/06/19: Solved incorrect index printing of A_i, Z_i, W_i
-        # 12/06/19: Migrated nn2str code for Keras model compatibility
         # Header
         string = "def NN(X):\n"
             
         for i in np.arange(len(nn.layers)):
-            if(not nn.layers[i].get_weights()): #dropout layer. Skip.
+            if(not nn.layers[i].get_weights()): #In case of dropout layer. Skip. [check]
                 continue #dropout "layer" has no weights.
             string = string + "    W" + str(i) + " = " + str(nn.layers[i].get_weights()[0]) + "\n"
             string = string + "    b" + str(i) + " = " + str(nn.layers[i].get_weights()[1]) + "\n"
@@ -496,9 +483,8 @@ class NescNNclasGE(base_ff):
         # elif(int(np.max(Pred)) > len(code)):
         #     while(int(np.max(Pred)) >= len(code)): #this can be used (remove extra codes)
         #         code = np.append(code, 0)
-        # ldata = np.sum(code[Pred])
+        # ldata = np.sum(code[Pred]) 
 
-        # print("Code array length: {}. Pred array length: {}.".format(len(code), len()))
         ldata = np.sum(code[[np.where(Pred[i] == unique)[0][0] for i in Pred]])
         return ldata
 

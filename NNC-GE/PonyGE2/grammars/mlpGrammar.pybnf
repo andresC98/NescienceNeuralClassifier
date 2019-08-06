@@ -7,5 +7,5 @@
 <hidden_layers> ::= <Dense> | <Dense>, <Dense>| <hidden_layers>, <Dense>
 <Dense> ::= Dense(units = <DenseUnits>, activation = <act_funct>)
 <DenseUnits> ::= 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 
-<act_funct> ::= '\"relu\"' | '\"sigmoid\"' 
+<act_funct> ::= '\"relu\"' 
 <optimizer> ::= '\"adam\"'|'\"Adadelta\"'
