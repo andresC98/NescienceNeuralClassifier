@@ -191,7 +191,7 @@ class NescNNclasGE(base_ff):
                         verbose=0, batch_size=32, epochs=self.it, callbacks = [early_stop, cp_save])
 
             #Restores network from best epoch
-            self.nn.load_weights(filepath = fname)
+            self.nn.load_weights(fname)
 
             #Nescience computations should be done using Test data.
             msdX_test = self.X_test[:, np.where(self.viu)[0]]
