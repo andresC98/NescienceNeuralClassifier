@@ -9,7 +9,8 @@ There are two main versions of Nescience Neural Network Classifier:
 **Folder structure:**
 
 - NNC-GE/PonyGE2: GE Version of Nescience NNC. Relevant files:
-    - `grammars/mlpConfig.txt`: Contains model grammars in Backus-Naur Form
+    - `grammars/mlpGrammar.pybnf`: Contains model grammars in Backus-Naur Form
+    - `parameters/mlpConfig.txt`: Config file setting Genetic Algorithm parameters (num generations, population size...)
     - `src/fitness/NescNNclasGE.py`: Contains main evaluation (fitness) and Nescience functions.
     - `src/ponyge.py`: Algorithm execution script.
     - `src/datasets.py`: Contains datasets and internal load functions
