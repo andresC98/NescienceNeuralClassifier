@@ -20,7 +20,7 @@ There are two main versions of Nescience Neural Network Classifier:
 **Usage of NNNC-GE Version:**
 
 - ***Inside e.g Google Colab notebook (Free GPU):*** **(all libraries included in Colab env)**
-    - Look at template: https://colab.research.google.com/drive/1YTooVm6TIiWHvwx4YkEB9xZM_PZzkEOW
+    - Look at template: https://colab.research.google.com/drive/1pJOq9CmIe7eCgdVlpB01-PFMBAzdry8F
 
 - ***As a script:*** **(some libraries may be required)**
     
