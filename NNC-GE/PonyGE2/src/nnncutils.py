@@ -53,19 +53,13 @@ def get_classification_report(model, s_mean, s_var, viu, dataset):
     
 
     if "fmnist" not in dataset:
-        X, X_test, y, y_test  = train_test_split(X,y, random_state = 42,test_size = 0.25)
+        X, X_test, y, y_test  = train_test_split(X,y, random_state = 42,test_size = 0.33)
 
     X_test = (X_test - s_mean) / np.sqrt(s_var)
-   
+    
     msdX_test = X_test[:, np.where(viu)[0]]
-
-    y_test = to_categorical(y_test)
-    y_pred = model.predict(msdX_test)
-
-    y_test_t = np.argmax(y_test,axis=1)
-    y_pred_t = np.argmax(y_pred,axis=1)
-
-    print(classification_report(y_test_t, y_pred_t))
+    y_pred = model.predict_classes(msdX_test)
+    print(classification_report(y_test, y_pred))
     print("Test accuracy:",model.evaluate(x=msdX_test, y=y_test)[1])
 
     return
