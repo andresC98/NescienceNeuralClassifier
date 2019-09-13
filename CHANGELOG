@@ -1,3 +1,57 @@
+commit 6fe269fd9d4a0b4d461609cff208fcef7e88ee9d
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Fri Sep 13 09:47:35 2019 +0200
+
+    Updated with new Nescience library
+
+commit 1da135fece0a73127250c319b0967297642dc3f7
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Fri Sep 13 09:44:56 2019 +0200
+
+    Updated NNC-GE algorithm to new Nescience library version
+
+commit 65c9ad69052efab29690f8fcaec29be396ef81d3
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Sep 3 07:19:32 2019 +0000
+
+    Updated README.md with easier to use Nescience NN AutoML Template
+
+commit f43a57f5aee927b74b2ddfca2e0add36c8ec9241
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Mon Sep 2 10:48:33 2019 +0200
+
+    Solved issue with load_weights after Keras 2.2.5 update
+
+commit bd9d614e949635542a8c5768eae4a12b0d7f6db7
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Mon Sep 2 07:15:01 2019 +0000
+
+    Update README.md
+
+commit b9b9c94e27c9f76ddd90d81a541703e77745878a
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Wed Aug 7 07:10:07 2019 +0000
+
+    Update README.md
+
+commit 835a6b004c7e657992e1a090592716a3dee6c8e5
+Author: Andres Carrillo <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 15:30:20 2019 +0200
+
+    Updated changelog
+
+commit bb1848bbaeb8cd58f537e7f60c499a09dd4e7ed7
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 13:25:41 2019 +0000
+
+    Update README.md
+
+commit 2d546694af4d6fa9d3c82627ddca9dd52ab2d6d9
+Author: Andres Carrillo Lopez <acarrillolopez98@gmail.com>
+Date:   Tue Aug 6 13:02:40 2019 +0000
+
+    Update README.md
+
 commit 0f2b4b4a0bc0a9d494908163ac485e481097b381
 Author: Andres Carrillo <acarrillolopez98@gmail.com>
 Date:   Tue Aug 6 14:27:13 2019 +0200
