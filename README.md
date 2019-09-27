@@ -46,3 +46,13 @@ To ease a quick evaluation of the results, the `nnncutils.py` script retrieves t
 > Note: All networks and parameter files resulting from the algorithm execution will be stored inside the `src/analysis/<runtime>/` folder.
 
 `analysis/<runtime>/stats.csv` file contains a dataframe that stores each evaluated individual's Nescience parameters.
+
+**Example results with this algorithm:**
+
+Balanced dataset:
+
+- [Digits Dataset Report](https://colab.research.google.com/drive/1KjfVcYwmSajJBbK6D-AdIp-yCj9ccN25)
+
+Inbalanced dataset:
+
+- [Pulsar Stars Dataset Report](https://colab.research.google.com/drive/1PeUY4qSl3ZanFu8h_SB94I-s8sO9996f)
